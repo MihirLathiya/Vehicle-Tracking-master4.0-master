@@ -85,7 +85,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                   ),
                 ),
                 SizedBox(
-                  height: 125,
+                  height: 150,
                 ),
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 30.0),
@@ -176,7 +176,29 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                         "Didn’t Receive the Link? ",
                         "Resend",
                         decoration: TextDecoration.underline,
-                        onTap: () {},
+                        onTap: () async {
+                          if (emailController.text.isNotEmpty) {
+                            await forgotPasswordViewViewModel
+                                .forgotPasswordViewViewModel(model: {
+                              'email': '${emailController.text.trim()}'
+                            });
+
+                            if (forgotPasswordViewViewModel
+                                    .forgotPasswordApiResponse.status ==
+                                Status.COMPLETE) {
+                              CommonSnackBar.commonSnackBar(
+                                  message:
+                                      'reset password link sent to your email');
+                              Get.offAll(() => SignInScreen());
+                            } else if (forgotPasswordViewViewModel
+                                    .forgotPasswordApiResponse.status ==
+                                Status.ERROR) {
+                              forgotPasswordViewViewModel.updateLoading(false);
+                              CommonSnackBar.commonSnackBar(
+                                  message: 'Something went wrong');
+                            }
+                          }
+                        },
                       ),
                       height25,
                     ],
