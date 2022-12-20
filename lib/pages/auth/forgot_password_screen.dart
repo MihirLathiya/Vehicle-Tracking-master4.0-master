@@ -76,13 +76,38 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                   height: 9,
                 ),
                 Text(
-                  'Do not worry! We will help you recover \n your password',
+                  'Do not worry! We will help you recover ',
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     color: Color(0xff8B8A8A),
                     fontFamily: 'inter',
                     fontSize: 14,
                   ),
+                ),
+                SizedBox(
+                  height: 5,
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      'your password ',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        color: Color(0xff8B8A8A),
+                        fontFamily: 'inter',
+                        fontSize: 14,
+                      ),
+                    ),
+                    SizedBox(
+                      width: 5,
+                    ),
+                    Image.asset(
+                      'assets/image/png/Key.png',
+                      height: 12,
+                      width: 12,
+                    )
+                  ],
                 ),
                 SizedBox(
                   height: 150,
