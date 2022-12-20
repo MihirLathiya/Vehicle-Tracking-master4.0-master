@@ -56,6 +56,22 @@ class _ChoosePlanScreenState extends State<ChoosePlanScreen> {
     false.obs,
     false.obs,
     false.obs,
+    false.obs,
+    false.obs,
+    false.obs,
+    false.obs,
+    false.obs,
+    false.obs,
+    false.obs,
+    false.obs,
+    false.obs,
+    false.obs,
+    false.obs,
+    false.obs,
+    false.obs,
+    false.obs,
+    false.obs,
+    false.obs,
     false.obs
   ].obs;
   RxInt accessControlsCount = 2.obs;
