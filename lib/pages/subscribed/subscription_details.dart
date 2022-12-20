@@ -44,7 +44,7 @@ class _SubscriptionDetailsScreenState extends State<SubscriptionDetailsScreen> {
   List accessData = ['Select'];
   List data1 = ['Select'];
   // List<String> items = ["Camera", "Phone", "Image", "Video"];
-  String selectedItem = "Select";
+  List selectedItem = [];
   AccessController accessController = Get.put(AccessController());
 
   RxBool isReserved = true.obs;
@@ -181,6 +181,13 @@ class _SubscriptionDetailsScreenState extends State<SubscriptionDetailsScreen> {
                                 log('DATAS :- ${data['data'][index]['access_control'].toString().replaceFirst('[', '').replaceAll(']', '').replaceAll('"', '')}');
                                 try {
                                   accessData.clear();
+
+                                  if ((data['data'] as List).length !=
+                                      selectedItem.length) {
+                                    print('ohh no bar bar andar');
+                                    selectedItem.add('Select');
+                                  }
+
                                   accessData = ['Select'];
                                   data['data'][index]['access_control']
                                       .toString()
@@ -212,7 +219,7 @@ class _SubscriptionDetailsScreenState extends State<SubscriptionDetailsScreen> {
                                   isLoading = false;
                                 }
                                 return subscriptionDetailsWidget(
-                                  index:index+1,
+                                    index: index,
                                     parking_name: data['data'][index]
                                         ['parking_name'],
                                     parkingtype: data['data'][index]
@@ -271,7 +278,7 @@ class _SubscriptionDetailsScreenState extends State<SubscriptionDetailsScreen> {
 
   Widget subscriptionDetailsWidget(
       {createdDate,
-        index,
+      index,
       endDate,
       parking_number,
       id,
@@ -282,6 +289,7 @@ class _SubscriptionDetailsScreenState extends State<SubscriptionDetailsScreen> {
       parkingtype,
       parking_name,
       subscriptionAmount}) {
+    print(';--selectedItem--${selectedItem}');
     return Container(
       width: Get.width,
       decoration: BoxDecoration(
@@ -309,7 +317,7 @@ class _SubscriptionDetailsScreenState extends State<SubscriptionDetailsScreen> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
-                  '$index',
+                  '${index + 1}',
                   style: AppTextStyle.normalRegular16.copyWith(
                     color: whiteColor,
                   ),
@@ -317,9 +325,40 @@ class _SubscriptionDetailsScreenState extends State<SubscriptionDetailsScreen> {
                 GestureDetector(
                   onTap: () {
                     bool x = autoRenue == 'Yes' ? true : false;
-                    setState(() {
-                      isAutoRenewal.value = x;
-                    });
+                    // setState(() {
+                    isAutoRenewal.value = x;
+                    // });
+                    try {
+                      accessData.clear();
+                      accessData = ['Select'];
+                      data['data'][index]['access_control']
+                          .toString()
+                          .replaceFirst('[', '')
+                          .replaceAll(']', '')
+                          .replaceAll('"', '')
+                          .split(',')
+                          .forEach((element) {
+                        accessData.add(element.toString());
+                      });
+
+                      print('-aaaa--${accessData}');
+
+                      print('-aaaa--${accessData}');
+                      data1.clear();
+                      data1 = ['Select'];
+
+                      for (int i = 0;
+                          i < (accessx['data'] as List).length;
+                          i++) {
+                        if (accessData
+                            .contains('${accessx['data'][i]['controls_id']}')) {
+                          data1.add(accessx['data'][i]['control_name']);
+                        }
+                      }
+                      log('SELCT DATA :- $data1');
+                    } catch (e) {
+                      isLoading = false;
+                    }
                     showEditDialog(id: id, renue: autoRenue);
                   },
                   child: Row(
@@ -504,13 +543,13 @@ class _SubscriptionDetailsScreenState extends State<SubscriptionDetailsScreen> {
                         child: Column(
                           children: [
                             DropdownButton(
-                              value: selectedItem,
+                              value: selectedItem[index],
                               isExpanded: false,
                               isDense: true,
                               underline: const SizedBox(),
                               onChanged: (value) {
                                 setState(() {
-                                  selectedItem = value;
+                                  selectedItem[index] = value;
                                 });
                               },
                               items: accessControllerList.map<DropdownMenuItem>(
@@ -870,6 +909,7 @@ class _SubscriptionDetailsScreenState extends State<SubscriptionDetailsScreen> {
         if (controller.accessApiResponse.status == Status.COMPLETE) {
           dynamic accessData1 = controller.accessApiResponse.data;
           changeAccessControlList.clear();
+
           for (int i = 0; i < (accessData1['data'] as List).length; i++) {
             print('SELECT ::: |${accessData1['data'][i]['control_name']}|');
 
