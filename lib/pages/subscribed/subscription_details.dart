@@ -212,6 +212,7 @@ class _SubscriptionDetailsScreenState extends State<SubscriptionDetailsScreen> {
                                   isLoading = false;
                                 }
                                 return subscriptionDetailsWidget(
+                                  index:index+1,
                                     parking_name: data['data'][index]
                                         ['parking_name'],
                                     parkingtype: data['data'][index]
@@ -270,6 +271,7 @@ class _SubscriptionDetailsScreenState extends State<SubscriptionDetailsScreen> {
 
   Widget subscriptionDetailsWidget(
       {createdDate,
+        index,
       endDate,
       parking_number,
       id,
@@ -307,7 +309,7 @@ class _SubscriptionDetailsScreenState extends State<SubscriptionDetailsScreen> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
-                  '$placeId',
+                  '$index',
                   style: AppTextStyle.normalRegular16.copyWith(
                     color: whiteColor,
                   ),
