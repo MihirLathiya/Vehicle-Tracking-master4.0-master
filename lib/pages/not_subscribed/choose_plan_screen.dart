@@ -945,10 +945,14 @@ class _ChoosePlanScreenState extends State<ChoosePlanScreen> {
                 AppAsset.cameraIcon,
               ),
               width05,
-              Text(
-                '${accessData['data'][index]['control_name']}',
-                textAlign: TextAlign.center,
-                style: AppTextStyle.normalSemiBold14,
+              Expanded(
+                child: Text(
+                  '${accessData['data'][index]['control_name']}',
+                  overflow: TextOverflow.ellipsis,
+                  maxLines: 2,
+                  textAlign: TextAlign.center,
+                  style: AppTextStyle.normalSemiBold14,
+                ),
               ),
             ],
           ),
