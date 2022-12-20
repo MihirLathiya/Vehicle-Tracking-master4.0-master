@@ -949,7 +949,6 @@ class _ChoosePlanScreenState extends State<ChoosePlanScreen> {
                 child: Text(
                   '${accessData['data'][index]['control_name']}',
                   overflow: TextOverflow.ellipsis,
-                  maxLines: 2,
                   textAlign: TextAlign.center,
                   style: AppTextStyle.normalSemiBold14,
                 ),

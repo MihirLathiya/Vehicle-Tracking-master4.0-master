@@ -24,32 +24,32 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
       Get.put(ForgotPasswordViewViewModel());
   @override
   Widget build(BuildContext context) {
-    return Container(
-      height: Get.height,
-      width: Get.width,
-      decoration: BoxDecoration(
-        image: DecorationImage(
-          image: AssetImage('assets/image/png/fgPassword.png'),
-        ),
-      ),
-      child: Scaffold(
+    return Scaffold(
+      backgroundColor: Colors.transparent,
+      extendBodyBehindAppBar: true,
+      appBar: AppBar(
         backgroundColor: Colors.transparent,
-        extendBodyBehindAppBar: true,
-        appBar: AppBar(
-          backgroundColor: Colors.transparent,
-          elevation: 0.0,
-          leading: GestureDetector(
-            onTap: () {
-              Get.back();
-            },
-            child: const Icon(
-              Icons.arrow_back_rounded,
-              color: whiteColor,
-            ),
+        elevation: 0.0,
+        leading: GestureDetector(
+          onTap: () {
+            Get.back();
+          },
+          child: const Icon(
+            Icons.arrow_back_rounded,
+            color: whiteColor,
           ),
         ),
-        body: Center(
-          child: SingleChildScrollView(
+      ),
+      body: Center(
+        child: SingleChildScrollView(
+          child: Container(
+            height: Get.height,
+            width: Get.width,
+            decoration: BoxDecoration(
+              image: DecorationImage(
+                image: AssetImage('assets/image/png/fgPassword.png'),
+              ),
+            ),
             child: Column(
               children: [
                 SizedBox(
