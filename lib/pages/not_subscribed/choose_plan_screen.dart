@@ -634,6 +634,7 @@ class _ChoosePlanScreenState extends State<ChoosePlanScreen> {
                                 log('DURATION ${widget.duration}');
                                 log('DURATION ${widget.placeId}');
                                 log('location ${widget.location}');
+                                log('location ${widget.location}');
                                 log('vehicleType ${widget.vehicleType}');
                                 log('slotType ${widget.slotType}');
                                 log('slotQuntity ${widget.slotQuntity}');
@@ -921,14 +922,14 @@ class _ChoosePlanScreenState extends State<ChoosePlanScreen> {
                       accesControllPrice
                           .add(accessData['data'][index]['controls_prize']);
                       accesControllId
-                          .add('"${accessData['data'][index]['controls_id']}"');
+                          .add('${accessData['data'][index]['controls_id']}');
                     } else {
                       accesControll.remove(
                           '"${accessData['data'][index]['control_name']}"');
                       accesControllPrice
                           .remove(accessData['data'][index]['controls_prize']);
                       accesControllId.remove(
-                          '"${accessData['data'][index]['controls_id']}"');
+                          '${accessData['data'][index]['controls_id']}');
                     }
                     log('ACCES LIST :- $accesControll');
                     log('ACCES LIST ID :- $accesControllId');

@@ -1079,32 +1079,37 @@ class _GotoYourSubscriptionScreenState
                           radius: 10,
                           height: 45,
                           onTap: () async {
-                            var headers = {
-                              'Authorization':
-                                  'Bearer ${PreferenceManager.getBariear()}'
-                            };
-                            var request = http.MultipartRequest(
-                                'POST',
-                                Uri.parse(
-                                    'https://i.invoiceapi.ml/api/customer/removeSlot'));
-                            request.fields.addAll({
-                              'slot_id':
-                                  '${slotNames.toString().split('..').last}'
-                            });
+                            if (isTermAgree.value == true) {
+                              var headers = {
+                                'Authorization':
+                                    'Bearer ${PreferenceManager.getBariear()}'
+                              };
+                              var request = http.MultipartRequest(
+                                  'POST',
+                                  Uri.parse(
+                                      'https://i.invoiceapi.ml/api/customer/removeSlot'));
+                              request.fields.addAll({
+                                'slot_id':
+                                    '${slotNames.toString().split('..').last}'
+                              });
 
-                            request.headers.addAll(headers);
+                              request.headers.addAll(headers);
 
-                            http.StreamedResponse response =
-                                await request.send();
+                              http.StreamedResponse response =
+                                  await request.send();
 
-                            if (response.statusCode == 200) {
-                              Get.back();
-                              remove.clear();
-                              print(await response.stream.bytesToString());
-                              CommonSnackBar.commonSnackBar(
-                                  message: 'slot remove Request send');
+                              if (response.statusCode == 200) {
+                                Get.back();
+                                remove.clear();
+                                print(await response.stream.bytesToString());
+                                CommonSnackBar.commonSnackBar(
+                                    message: 'slot remove Request send');
+                              } else {
+                                print(response.reasonPhrase);
+                              }
                             } else {
-                              print(response.reasonPhrase);
+                              CommonSnackBar.commonSnackBar(
+                                  message: 'Accept Condition first');
                             }
                           },
                         ),

@@ -1,10 +1,11 @@
 import 'dart:convert';
 import 'dart:developer';
 
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
+import 'package:shimmer/shimmer.dart';
 import 'package:vehicletracking/models/apis/api_response.dart';
 import 'package:vehicletracking/models/response_model/get_parking_slot_res_model.dart';
 import 'package:vehicletracking/pages/not_subscribed/subscription_screen.dart';
@@ -17,6 +18,7 @@ import 'package:vehicletracking/utils/app_static_decoration.dart';
 import 'package:vehicletracking/utils/app_text_style.dart';
 import 'package:vehicletracking/utils/validators.dart';
 import 'package:vehicletracking/view_model/get_parking_slot_view_model.dart';
+import 'package:vehicletracking/view_model/image_controller.dart';
 import 'package:vehicletracking/widgets/app_button.dart';
 
 class SlotDetailsScreen extends StatefulWidget {
@@ -31,6 +33,7 @@ class _SlotDetailsScreenState extends State<SlotDetailsScreen> {
   GetParkingSlotViewModel getParkingSlotViewModel =
       Get.put(GetParkingSlotViewModel());
   TextEditingController description = TextEditingController();
+  ImageController imageController = Get.put(ImageController());
   List parkingPlace = [];
   dynamic location;
   bool enabled = false;
@@ -64,7 +67,7 @@ class _SlotDetailsScreenState extends State<SlotDetailsScreen> {
   @override
   void initState() {
     log('PREFRENCE :- ${PreferenceManager.getBariear()}');
-
+    imageController.apiCalling();
     getParkingPlace();
     log('DTAA :- ${PreferenceManager.getAccountNo()} , ${PreferenceManager.getPlaceId()}');
     getParkingSlotViewModel.getParkingSlotViewModel(
@@ -77,6 +80,7 @@ class _SlotDetailsScreenState extends State<SlotDetailsScreen> {
 
   @override
   Widget build(BuildContext context) {
+    log('ACCOUNT NO:- ${PreferenceManager.getAccountNo()}');
     return Scaffold(
       body: Stack(
         // alignment: AlignmentDirectional.bottomCenter,
@@ -171,24 +175,58 @@ class _SlotDetailsScreenState extends State<SlotDetailsScreen> {
               ),
             ),
           ),
-          SafeArea(
-            child: Align(
-              alignment: Alignment.topRight,
-              child: Padding(
-                padding: const EdgeInsets.all(15),
-                child: GestureDetector(
-                  onTap: () {
-                    Get.to(() => SettingScreen());
-                  },
-                  child: SvgPicture.asset(
-                    'assets/image/svg/menu.svg',
-                    height: 40,
-                    width: 40,
+          GetBuilder<ImageController>(
+            builder: (controller) {
+              if (controller.loading == true) {
+                return IconButton(
+                    onPressed: () {
+                      Get.to(
+                        () => SettingScreen(),
+                      );
+                    },
+                    icon: Icon(Icons.menu));
+              } else {
+                return SafeArea(
+                  child: Align(
+                    alignment: Alignment.topRight,
+                    child: Padding(
+                      padding: const EdgeInsets.all(25),
+                      child: GestureDetector(
+                        onTap: () {
+                          Get.to(
+                            () => SettingScreen(),
+                          );
+                        },
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(1000),
+                          child: CachedNetworkImage(
+                            height: 45,
+                            width: 45,
+                            imageUrl: '${controller.url}',
+                            fit: BoxFit.cover,
+                            errorWidget: (context, url, error) => Padding(
+                              padding: EdgeInsets.all(15.0),
+                              child: Icon(Icons.menu),
+                            ),
+                            progressIndicatorBuilder:
+                                (context, url, downloadProgress) =>
+                                    Shimmer.fromColors(
+                              baseColor: Colors.white.withOpacity(0.4),
+                              highlightColor: Colors.white.withOpacity(0.2),
+                              enabled: true,
+                              child: Container(
+                                color: Colors.white,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
                   ),
-                ),
-              ),
-            ),
-          ),
+                );
+              }
+            },
+          )
         ],
       ),
       bottomNavigationBar: button(),

@@ -76,8 +76,10 @@ class _PaymentScreenState extends State<PaymentScreen> {
   }
 
   List selected = [];
+  List controllers = [];
 
   Map<String, dynamic> selected1 = {};
+  Map<String, dynamic> controllers1 = {};
 
   var headers = {'Authorization': 'Bearer ${PreferenceManager.getBariear()}'};
   bool iaAdded = false;
@@ -85,6 +87,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
   void initState() {
     loadSaveCard();
     selected = widget.slotList;
+    controllers = widget.accessController;
     super.initState();
   }
 
@@ -92,18 +95,6 @@ class _PaymentScreenState extends State<PaymentScreen> {
   List x;
   @override
   Widget build(BuildContext context) {
-    log('DURATION ${widget.duration}');
-    log('DURATION ${widget.total}');
-    log('location ${widget.location}');
-    log('vehicleType ${widget.vehicleType}');
-    log('slotType ${widget.slotType}');
-    log('slotQuntity ${widget.slotQuntity}');
-    log('SLOT LIST :-  ${widget.slotList}');
-
-    log('vehicleNumber${widget.vehicleNumber}');
-    log('price ${widget.price}');
-    log('access Controller ${widget.accessController}');
-    log(' slotList: selectedSlot, ${widget.placeId}');
     return Scaffold(
       extendBodyBehindAppBar: true,
       appBar: AppBar(
@@ -380,73 +371,12 @@ class _PaymentScreenState extends State<PaymentScreen> {
                             if (widget.subId != null || widget.subId == '') {
                               log('messagesss ${widget.subId}');
 
-                              selected1.clear();
-                              for (int i = 0; i < selected.length; i++) {
-                                selected1.addAll(
-                                    {'sloat_list[$i]': '${selected[i]}'});
-                              }
-                              Map<String, dynamic> bodyy11 = {
-                                'subscription_id': '${widget.subId}',
-                                'parking_type': '${widget.slotType}',
-                                'slot_quantity': '${widget.slotQuntity}',
-                                'vehicle_number': '${widget.vehicleNumber}'
-                              };
-                              bodyy11.addAll(selected1);
-                              log('BODTYS :- $bodyy11');
-                              var request = await http.post(
-                                  Uri.parse(
-                                      'https://i.invoiceapi.ml/api/customer/addSlot'),
-                                  body: bodyy11,
-                                  headers: headers);
-                              log('RESPONSE CODE :- ${request.statusCode}');
-                              if (request.statusCode == 200) {
-                                Get.offAll(() => SlotDetailsScreen());
-                                CommonSnackBar.commonSnackBar(
-                                    message: 'Successfully added');
-                              } else {
-                                CommonSnackBar.commonSnackBar(
-                                    message: '${request.reasonPhrase}');
-                              }
+                              await addSlot();
                             }
 
                             /// CREATE SUBSCRIPTION
                             else {
-                              log('messagesss1111');
-                              selected1.clear();
-                              for (int i = 0; i < selected.length; i++) {
-                                selected1.addAll(
-                                    {'sloat_list[$i]': '${selected[i]}'});
-                              }
-                              Map<String, dynamic> bodyy22 = {
-                                'place_id': '${widget.placeId}',
-                                'slot_quantity': '${widget.slotQuntity}',
-                                'subscription_amount': '${widget.total}',
-                                'parking_type': '${widget.slotType}',
-                                'vehicle_type': '${widget.vehicleType}',
-                                'access_controls':
-                                    '${widget.accessController.toString()}',
-                                'paln_duration': '${widget.duration}',
-                                'vehicle_number':
-                                    '${widget.vehicleNumber.toString()}'
-                              };
-
-                              bodyy22.addAll(selected1);
-
-                              var request = await http.post(
-                                  Uri.parse(
-                                      'https://i.invoiceapi.ml/api/customer/createSubscription'),
-                                  headers: headers,
-                                  body: bodyy22);
-                              log('BODY :- $bodyy22');
-                              if (request.statusCode == 200) {
-                                print(
-                                    'RESPONSE ${jsonDecode(await request.body)}');
-                                Get.offAll(() => SlotDetailsScreen());
-                              } else {
-                                CommonSnackBar.commonSnackBar(
-                                    message:
-                                        'RESPONSE ERROR ${request.reasonPhrase}');
-                              }
+                              await createSub();
                             }
                           } else {
                             print(response.reasonPhrase);
@@ -460,73 +390,13 @@ class _PaymentScreenState extends State<PaymentScreen> {
                           /// ADD SLOT
                           if (widget.subId != null || widget.subId == '') {
                             log('messagesss ${widget.subId}');
-                            selected1.clear();
-                            for (int i = 0; i < selected.length; i++) {
-                              selected1
-                                  .addAll({'sloat_list[$i]': '${selected[i]}'});
-                            }
-                            Map<String, dynamic> bodyy11 = {
-                              'subscription_id': '${widget.subId}',
-                              'parking_type': '${widget.slotType}',
-                              'slot_quantity': '${widget.slotQuntity}',
-                              'vehicle_number': '${widget.vehicleNumber}'
-                            };
-                            bodyy11.addAll(selected1);
-                            log('BODTYS :- $bodyy11');
-                            var request = await http.post(
-                                Uri.parse(
-                                    'https://i.invoiceapi.ml/api/customer/addSlot'),
-                                body: bodyy11,
-                                headers: headers);
-                            log('RESPONSE CODE :- ${request.statusCode}');
-                            if (request.statusCode == 200) {
-                              Get.offAll(() => SlotDetailsScreen());
-                              CommonSnackBar.commonSnackBar(
-                                  message: 'Successfully added');
-                            } else {
-                              CommonSnackBar.commonSnackBar(
-                                  message: '${request.reasonPhrase}');
-                            }
+                            await addSlot();
                           }
 
                           /// CREATE SUBSCRIPTION
                           else {
                             log('messagesss11111223');
-                            selected1.clear();
-                            for (int i = 0; i < selected.length; i++) {
-                              selected1
-                                  .addAll({'sloat_list[$i]': '${selected[i]}'});
-                            }
-                            Map<String, dynamic> bodyy22 = {
-                              'place_id': '${widget.placeId}',
-                              'slot_quantity': '${widget.slotQuntity}',
-                              'subscription_amount': '${widget.total}',
-                              'parking_type': '${widget.slotType}',
-                              'vehicle_type': '${widget.vehicleType}',
-                              'access_controls':
-                                  '${widget.accessController.toString()}',
-                              'paln_duration': '${widget.duration}',
-                              'vehicle_number':
-                                  '${widget.vehicleNumber.toString()}'
-                            };
-
-                            bodyy22.addAll(selected1);
-                            log('CREATE SUBSCRIPTION BODY :- $bodyy22');
-                            var request = await http.post(
-                                Uri.parse(
-                                    'https://i.invoiceapi.ml/api/customer/createSubscription'),
-                                headers: headers,
-                                body: bodyy22);
-
-                            if (request.statusCode == 200) {
-                              print(
-                                  'RESPONSE ${jsonDecode(await request.body)}');
-                              Get.offAll(() => SlotDetailsScreen());
-                            } else {
-                              CommonSnackBar.commonSnackBar(
-                                  message:
-                                      'RESPONSE ERROR ${request.reasonPhrase}');
-                            }
+                            await createSub();
                           }
                         }
                         Get.back();
@@ -543,7 +413,68 @@ class _PaymentScreenState extends State<PaymentScreen> {
     );
   }
 
-  createSub() async {}
+  addSlot() async {
+    selected1.clear();
+    for (int i = 0; i < selected.length; i++) {
+      selected1.addAll({'sloat_list[$i]': '${selected[i]}'});
+    }
+    Map<String, dynamic> bodyy11 = {
+      'subscription_id': '${widget.subId}',
+      'parking_type': '${widget.slotType}',
+      'slot_quantity': '${widget.slotQuntity}',
+      'vehicle_number': '${widget.vehicleNumber}'
+    };
+    bodyy11.addAll(selected1);
+    log('BODTYS :- $bodyy11');
+    var request = await http.post(
+        Uri.parse('https://i.invoiceapi.ml/api/customer/addSlot'),
+        body: bodyy11,
+        headers: headers);
+    log('RESPONSE CODE :- ${request.statusCode}');
+    if (request.statusCode == 200) {
+      Get.offAll(() => SlotDetailsScreen());
+      CommonSnackBar.commonSnackBar(message: 'Successfully added');
+    } else {
+      CommonSnackBar.commonSnackBar(message: '${request.reasonPhrase}');
+    }
+  }
+
+  createSub() async {
+    log('messagesss1111');
+    selected1.clear();
+    controllers1.clear();
+    for (int i = 0; i < selected.length; i++) {
+      selected1.addAll({'sloat_list[$i]': '${selected[i]}'});
+    }
+    for (int i = 0; i < controllers.length; i++) {
+      controllers1.addAll({'access_controls[$i]': '${controllers[i]}'});
+    }
+    Map<String, dynamic> bodyy22 = {
+      'place_id': '${widget.placeId}',
+      'slot_quantity': '${widget.slotQuntity}',
+      'subscription_amount': '${widget.total}',
+      'parking_type': '${widget.slotType}',
+      'vehicle_type': '${widget.vehicleType}',
+      'paln_duration': '${widget.duration}',
+      'vehicle_number': '${widget.vehicleNumber.toString()}'
+    };
+
+    bodyy22.addAll(selected1);
+    bodyy22.addAll(controllers1);
+    log('BODY OF ADD DATAS  :- $bodyy22');
+    var request = await http.post(
+        Uri.parse('https://i.invoiceapi.ml/api/customer/createSubscription'),
+        headers: headers,
+        body: bodyy22);
+
+    if (request.statusCode == 200) {
+      print('RESPONSE ${jsonDecode(await request.body)}');
+      Get.offAll(() => SlotDetailsScreen());
+    } else {
+      CommonSnackBar.commonSnackBar(
+          message: 'RESPONSE ERROR ${request.reasonPhrase}');
+    }
+  }
 
   Widget cardContainer({String icon, String text, void Function() onTap}) {
     return GestureDetector(

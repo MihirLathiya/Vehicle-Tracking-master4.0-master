@@ -1,9 +1,12 @@
+import 'dart:convert';
 import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
+import 'package:http/http.dart' as http;
 import 'package:vehicletracking/pages/payment/payment_screen.dart';
+import 'package:vehicletracking/prefrence_manager/prefrence_manager.dart';
 import 'package:vehicletracking/utils/app_assets.dart';
 import 'package:vehicletracking/utils/app_colors.dart';
 import 'package:vehicletracking/utils/app_static_decoration.dart';
@@ -51,11 +54,50 @@ class OrderSummaryScreen extends StatefulWidget {
 }
 
 class _OrderSummaryScreenState extends State<OrderSummaryScreen> {
+  bool loading = false;
+  dynamic paymentData;
+  getAccountPayAmmount() async {
+    setState(() {
+      loading = true;
+    });
+    var headers = {'Authorization': 'Bearer ${PreferenceManager.getBariear()}'};
+    var request = http.Request(
+        'GET',
+        Uri.parse(
+            'https://i.invoiceapi.ml/api/customer/getPaymentAmount?subscription_id=${widget.subId}&slot_quantity=${widget.slotQuntity}&access_control=${widget.accessController}'));
+
+    request.headers.addAll(headers);
+
+    http.StreamedResponse response = await request.send();
+
+    if (response.statusCode == 200) {
+      paymentData = jsonDecode(await response.stream.bytesToString());
+      setState(() {});
+      print('PAYMENT :- ${paymentData}');
+      setState(() {
+        loading = false;
+      });
+    } else {
+      print(response.reasonPhrase);
+      setState(() {
+        loading = true;
+      });
+    }
+  }
+
+  @override
+  void initState() {
+    getAccountPayAmmount();
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
+    log('DATA ${widget.subId}');
     log('DATA ${widget.access}');
     return Scaffold(
       extendBodyBehindAppBar: true,
+      backgroundColor: Colors.black,
       appBar: AppBar(
         elevation: 0.0,
         backgroundColor: Colors.transparent,
@@ -74,89 +116,179 @@ class _OrderSummaryScreenState extends State<OrderSummaryScreen> {
           ),
         ),
       ),
-      body: Stack(
-        children: [
-          Container(
-            height: Get.height,
-            width: Get.width,
-            padding: const EdgeInsets.only(bottom: 70),
-            decoration: const BoxDecoration(
-              image: DecorationImage(
-                image: AssetImage(AppAsset.paymentbackground),
-                fit: BoxFit.cover,
-              ),
-            ),
-            child: SafeArea(
-              child: SingleChildScrollView(
-                child: Column(
+      body: widget.subId != null
+          ? loading == true
+              ? Center(
+                  child: CircularProgressIndicator(),
+                )
+              : Stack(
                   children: [
-                    const SizedBox(
-                      height: 20,
+                    Container(
+                      height: Get.height,
+                      width: Get.width,
+                      padding: const EdgeInsets.only(bottom: 70),
+                      decoration: const BoxDecoration(
+                        image: DecorationImage(
+                          image: AssetImage(AppAsset.paymentbackground),
+                          fit: BoxFit.cover,
+                        ),
+                      ),
+                      child: SafeArea(
+                        child: SingleChildScrollView(
+                          child: Column(
+                            children: [
+                              const SizedBox(
+                                height: 20,
+                              ),
+                              membershipPlan(),
+                              height10,
+                              totalControls(),
+                              height10,
+                              // priceDetails(),
+                            ],
+                          ),
+                        ),
+                      ),
                     ),
-                    membershipPlan(),
-                    height10,
-                    totalControls(),
-                    height10,
-                    priceDetails(),
+                    Align(
+                      alignment: Alignment.bottomCenter,
+                      child: Container(
+                        height: 70,
+                        color: blackColor.withOpacity(0.20),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 20,
+                        ),
+                        child: Row(
+                          children: [
+                            Text(
+                              '${paymentData['data']['amount']}/-',
+                              style: AppTextStyle.bold16
+                                  .copyWith(color: whiteColor),
+                            ),
+                            const Spacer(),
+                            SizedBox(
+                              width: 130,
+                              height: 40,
+                              child: AppFillButton(
+                                radius: 10,
+                                onTap: () {
+                                  log('DURATION ${widget.duration}');
+                                  log('location ${widget.location}');
+                                  log('vehicleType ${widget.vehicleType}');
+                                  log('slotType ${widget.slotType}');
+                                  log('slotQuntity ${widget.slotQuntity}');
+                                  log('vehicleNumber ${widget.vehicleNumber}');
+                                  log('price ${widget.price}');
+                                  log('access Controller ${widget.accessController}');
+                                  log(' slotList: selectedSlot, ${widget.slotList}');
+                                  Get.to(() => PaymentScreen(
+                                      slotList: widget.slotList,
+                                      subId: widget.subId,
+                                      total: paymentData['data']['amount'],
+                                      placeId: widget.placeId,
+                                      accessController: widget.accessController,
+                                      slotQuntity: widget.slotQuntity,
+                                      slotType: widget.slotType,
+                                      vehicleNumber: widget.vehicleNumber,
+                                      vehicleType: widget.vehicleType,
+                                      location: widget.location,
+                                      duration: widget.duration,
+                                      price: widget.price));
+                                },
+                                title: 'Continue',
+                                fontSize: 15,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
                   ],
-                ),
-              ),
-            ),
-          ),
-          Align(
-            alignment: Alignment.bottomCenter,
-            child: Container(
-              height: 70,
-              color: blackColor.withOpacity(0.20),
-              padding: const EdgeInsets.symmetric(
-                horizontal: 20,
-              ),
-              child: Row(
-                children: [
-                  Text(
-                    '${widget.totalCount}/-',
-                    style: AppTextStyle.bold16.copyWith(color: whiteColor),
-                  ),
-                  const Spacer(),
-                  SizedBox(
-                    width: 130,
-                    height: 40,
-                    child: AppFillButton(
-                      radius: 10,
-                      onTap: () {
-                        log('DURATION ${widget.duration}');
-                        log('location ${widget.location}');
-                        log('vehicleType ${widget.vehicleType}');
-                        log('slotType ${widget.slotType}');
-                        log('slotQuntity ${widget.slotQuntity}');
-                        log('vehicleNumber ${widget.vehicleNumber}');
-                        log('price ${widget.price}');
-                        log('access Controller ${widget.accessController}');
-                        log(' slotList: selectedSlot, ${widget.slotList}');
-                        Get.to(() => PaymentScreen(
-                            slotList: widget.slotList,
-                            subId: widget.subId,
-                            total: widget.totalCount,
-                            placeId: widget.placeId,
-                            accessController: widget.accessController,
-                            slotQuntity: widget.slotQuntity,
-                            slotType: widget.slotType,
-                            vehicleNumber: widget.vehicleNumber,
-                            vehicleType: widget.vehicleType,
-                            location: widget.location,
-                            duration: widget.duration,
-                            price: widget.price));
-                      },
-                      title: 'Continue',
-                      fontSize: 15,
+                )
+          : Stack(
+              children: [
+                Container(
+                  height: Get.height,
+                  width: Get.width,
+                  padding: const EdgeInsets.only(bottom: 70),
+                  decoration: const BoxDecoration(
+                    image: DecorationImage(
+                      image: AssetImage(AppAsset.paymentbackground),
+                      fit: BoxFit.cover,
                     ),
                   ),
-                ],
-              ),
+                  child: SafeArea(
+                    child: SingleChildScrollView(
+                      child: Column(
+                        children: [
+                          const SizedBox(
+                            height: 20,
+                          ),
+                          membershipPlan(),
+                          height10,
+                          totalControls(),
+                          height10,
+                          priceDetails(),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+                Align(
+                  alignment: Alignment.bottomCenter,
+                  child: Container(
+                    height: 70,
+                    color: blackColor.withOpacity(0.20),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 20,
+                    ),
+                    child: Row(
+                      children: [
+                        Text(
+                          '${widget.totalCount}/-',
+                          style:
+                              AppTextStyle.bold16.copyWith(color: whiteColor),
+                        ),
+                        const Spacer(),
+                        SizedBox(
+                          width: 130,
+                          height: 40,
+                          child: AppFillButton(
+                            radius: 10,
+                            onTap: () {
+                              log('DURATION ${widget.duration}');
+                              log('location ${widget.location}');
+                              log('vehicleType ${widget.vehicleType}');
+                              log('slotType ${widget.slotType}');
+                              log('slotQuntity ${widget.slotQuntity}');
+                              log('vehicleNumber ${widget.vehicleNumber}');
+                              log('price ${widget.price}');
+                              log('access Controller ${widget.accessController}');
+                              log(' slotList: selectedSlot, ${widget.slotList}');
+                              Get.to(() => PaymentScreen(
+                                  slotList: widget.slotList,
+                                  subId: widget.subId,
+                                  total: widget.totalCount,
+                                  placeId: widget.placeId,
+                                  accessController: widget.accessController,
+                                  slotQuntity: widget.slotQuntity,
+                                  slotType: widget.slotType,
+                                  vehicleNumber: widget.vehicleNumber,
+                                  vehicleType: widget.vehicleType,
+                                  location: widget.location,
+                                  duration: widget.duration,
+                                  price: widget.price));
+                            },
+                            title: 'Continue',
+                            fontSize: 15,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
             ),
-          ),
-        ],
-      ),
     );
   }
 

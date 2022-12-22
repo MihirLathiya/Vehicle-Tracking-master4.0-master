@@ -7,7 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 import 'package:image_picker/image_picker.dart';
-import 'package:vehicletracking/models/response_model/profile_res_model.dart';
+import 'package:shimmer/shimmer.dart';
 import 'package:vehicletracking/pages/auth/sign_in.dart';
 import 'package:vehicletracking/pages/settings/change_password_screen.dart';
 import 'package:vehicletracking/pages/settings/edit_profile_screen.dart';
@@ -18,6 +18,7 @@ import 'package:vehicletracking/utils/app_colors.dart';
 import 'package:vehicletracking/utils/app_static_decoration.dart';
 import 'package:vehicletracking/utils/app_text_style.dart';
 import 'package:vehicletracking/utils/validators.dart';
+import 'package:vehicletracking/view_model/image_controller.dart';
 
 class SettingScreen extends StatefulWidget {
   const SettingScreen({Key key}) : super(key: key);
@@ -27,25 +28,26 @@ class SettingScreen extends StatefulWidget {
 }
 
 class _SettingScreenState extends State<SettingScreen> {
-  String image;
-  apiCalling() async {
-    var headers = {'Authorization': 'Bearer ${PreferenceManager.getBariear()}'};
-    var response = await http.get(
-        Uri.parse(
-            'https://i.invoiceapi.ml/api/customer/getUserDetail/${PreferenceManager.getAccountNo()}'),
-        headers: headers);
-
-    if (response.statusCode == 200) {
-      print(" RESPONSE ${await response}");
-      setState(() {});
-      var data = jsonDecode(response.body);
-      ProfileResponseModel hello = await ProfileResponseModel.fromJson(data);
-      log('HELLO :- ${hello.data.image}');
-      image = hello.data.image;
-    } else {
-      print(response.reasonPhrase);
-    }
-  }
+  // String image;
+  // apiCalling() async {
+  //   var headers = {'Authorization': 'Bearer ${PreferenceManager.getBariear()}'};
+  //   var response = await http.get(
+  //       Uri.parse(
+  //           'https://i.invoiceapi.ml/api/customer/getUserDetail/${PreferenceManager.getAccountNo()}'),
+  //       headers: headers);
+  //
+  //   if (response.statusCode == 200) {
+  //     print(" RESPONSE ${await response}");
+  //     setState(() {});
+  //     var data = jsonDecode(response.body);
+  //     ProfileResponseModel hello = await ProfileResponseModel.fromJson(data);
+  //     log('HELLO :- ${hello.data.image}');
+  //     image = hello.data.image;
+  //   } else {
+  //     print(response.reasonPhrase);
+  //   }
+  // }
+  ImageController imageController = Get.put(ImageController());
 
   logOutRepo() async {
     var headers = {'Authorization': 'Bearer ${PreferenceManager.getBariear()}'};
@@ -87,7 +89,8 @@ class _SettingScreenState extends State<SettingScreen> {
       http.StreamedResponse response = await request.send();
 
       if (response.statusCode == 200) {
-        print(await response.stream.bytesToString());
+        var data = jsonDecode(await response.stream.bytesToString());
+        imageController.updateUrl(imageUrl: '${data['user']['image']}');
         CommonSnackBar.commonSnackBar(message: 'Image Updated');
       } else {
         print(response.reasonPhrase);
@@ -97,12 +100,12 @@ class _SettingScreenState extends State<SettingScreen> {
 
   @override
   void initState() {
-    Future.delayed(
-      Duration(seconds: 2),
-      () {
-        apiCalling();
-      },
-    );
+    // Future.delayed(
+    //   Duration(seconds: 2),
+    //   () {
+    // apiCalling();
+    // },
+    // );
     super.initState();
   }
 
@@ -147,45 +150,106 @@ class _SettingScreenState extends State<SettingScreen> {
                     child: Stack(
                       clipBehavior: Clip.none,
                       children: [
-                        Container(
-                          height: 90,
-                          width: 90,
-                          clipBehavior: Clip.antiAliasWithSaveLayer,
-                          decoration: BoxDecoration(
-                            shape: BoxShape.circle,
-                            border: Border.all(color: Colors.red, width: 4),
-                          ),
-                          child: userImage != null
-                              ? ClipRRect(
-                                  borderRadius: BorderRadius.circular(10000),
-                                  child: Image.file(
-                                    userImage,
-                                    fit: BoxFit.cover,
-                                  ))
-                              : image != null
-                                  ? ClipRRect(
-                                      borderRadius:
-                                          BorderRadius.circular(10000),
-                                      child: CachedNetworkImage(
-                                        imageUrl: "${image}",
-                                        fit: BoxFit.cover,
-                                        progressIndicatorBuilder: (context, url,
-                                                downloadProgress) =>
-                                            CircularProgressIndicator(
-                                                value:
-                                                    downloadProgress.progress),
-                                        errorWidget: (context, url, error) =>
-                                            Icon(Icons.error),
-                                      ),
-                                    )
-                                  : ClipRRect(
-                                      borderRadius:
-                                          BorderRadius.circular(10000),
-                                      child: Icon(
-                                        Icons.add_a_photo,
-                                      ),
-                                    ),
+                        GetBuilder<ImageController>(
+                          builder: (controller) {
+                            if (controller.loading == true) {
+                              return Shimmer.fromColors(
+                                baseColor: Colors.white.withOpacity(0.4),
+                                highlightColor: Colors.white.withOpacity(0.2),
+                                enabled: true,
+                                child: Container(
+                                  height: 400,
+                                  width: 40,
+                                  color: Colors.white,
+                                ),
+                              );
+                            } else {
+                              return Container(
+                                height: 90,
+                                width: 90,
+                                clipBehavior: Clip.antiAliasWithSaveLayer,
+                                decoration: BoxDecoration(
+                                  shape: BoxShape.circle,
+                                  border:
+                                      Border.all(color: Colors.red, width: 4),
+                                ),
+                                child: userImage != null
+                                    ? ClipRRect(
+                                        borderRadius:
+                                            BorderRadius.circular(10000),
+                                        child: Image.file(
+                                          userImage,
+                                          fit: BoxFit.cover,
+                                        ))
+                                    : controller.url != null
+                                        ? ClipRRect(
+                                            borderRadius:
+                                                BorderRadius.circular(10000),
+                                            child: CachedNetworkImage(
+                                              imageUrl: "${controller.url}",
+                                              fit: BoxFit.cover,
+                                              progressIndicatorBuilder:
+                                                  (context, url,
+                                                          downloadProgress) =>
+                                                      CircularProgressIndicator(
+                                                          value:
+                                                              downloadProgress
+                                                                  .progress),
+                                              errorWidget:
+                                                  (context, url, error) =>
+                                                      Icon(Icons.error),
+                                            ),
+                                          )
+                                        : ClipRRect(
+                                            borderRadius:
+                                                BorderRadius.circular(10000),
+                                            child: Icon(
+                                              Icons.add_a_photo,
+                                            ),
+                                          ),
+                              );
+                            }
+                          },
                         ),
+                        // Container(
+                        //   height: 90,
+                        //   width: 90,
+                        //   clipBehavior: Clip.antiAliasWithSaveLayer,
+                        //   decoration: BoxDecoration(
+                        //     shape: BoxShape.circle,
+                        //     border: Border.all(color: Colors.red, width: 4),
+                        //   ),
+                        //   child: userImage != null
+                        //       ? ClipRRect(
+                        //           borderRadius: BorderRadius.circular(10000),
+                        //           child: Image.file(
+                        //             userImage,
+                        //             fit: BoxFit.cover,
+                        //           ))
+                        //       : image != null
+                        //           ? ClipRRect(
+                        //               borderRadius:
+                        //                   BorderRadius.circular(10000),
+                        //               child: CachedNetworkImage(
+                        //                 imageUrl: "${image}",
+                        //                 fit: BoxFit.cover,
+                        //                 progressIndicatorBuilder: (context, url,
+                        //                         downloadProgress) =>
+                        //                     CircularProgressIndicator(
+                        //                         value:
+                        //                             downloadProgress.progress),
+                        //                 errorWidget: (context, url, error) =>
+                        //                     Icon(Icons.error),
+                        //               ),
+                        //             )
+                        //           : ClipRRect(
+                        //               borderRadius:
+                        //                   BorderRadius.circular(10000),
+                        //               child: Icon(
+                        //                 Icons.add_a_photo,
+                        //               ),
+                        //             ),
+                        // ),
                         Positioned(
                           bottom: 0,
                           right: 0,

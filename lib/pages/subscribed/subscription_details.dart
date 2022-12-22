@@ -178,46 +178,8 @@ class _SubscriptionDetailsScreenState extends State<SubscriptionDetailsScreen> {
                                       ),
                               physics: const NeverScrollableScrollPhysics(),
                               itemBuilder: (BuildContext context, int index) {
-                                log('DATAS :- ${data['data'][index]['access_control'].toString().replaceFirst('[', '').replaceAll(']', '').replaceAll('"', '')}');
-                                try {
-                                  accessData.clear();
-
-                                  if ((data['data'] as List).length !=
-                                      selectedItem.length) {
-                                    print('ohh no bar bar andar');
-                                    selectedItem.add('Select');
-                                  }
-
-                                  accessData = ['Select'];
-                                  data['data'][index]['access_control']
-                                      .toString()
-                                      .replaceFirst('[', '')
-                                      .replaceAll(']', '')
-                                      .replaceAll('"', '')
-                                      .split(',')
-                                      .forEach((element) {
-                                    accessData.add(element.toString());
-                                  });
-
-                                  print('-aaaa--${accessData}');
-
-                                  print('-aaaa--${accessData}');
-                                  data1.clear();
-                                  data1 = ['Select'];
-
-                                  for (int i = 0;
-                                      i < (accessx['data'] as List).length;
-                                      i++) {
-                                    if (accessData.contains(
-                                        '${accessx['data'][i]['controls_id']}')) {
-                                      data1.add(
-                                          accessx['data'][i]['control_name']);
-                                    }
-                                  }
-                                  log('SELCT DATA :- $data1');
-                                } catch (e) {
-                                  isLoading = false;
-                                }
+                                log('DATAS :- ${data['data'][index]['access_control'].toString().replaceFirst('[', '').replaceAll(']', '')}');
+                                fetchData(index);
                                 return subscriptionDetailsWidget(
                                     index: index,
                                     parking_name: data['data'][index]
@@ -328,37 +290,8 @@ class _SubscriptionDetailsScreenState extends State<SubscriptionDetailsScreen> {
                     // setState(() {
                     isAutoRenewal.value = x;
                     // });
-                    try {
-                      accessData.clear();
-                      accessData = ['Select'];
-                      data['data'][index]['access_control']
-                          .toString()
-                          .replaceFirst('[', '')
-                          .replaceAll(']', '')
-                          .replaceAll('"', '')
-                          .split(',')
-                          .forEach((element) {
-                        accessData.add(element.toString());
-                      });
+                    fetchData(index);
 
-                      print('-aaaa--${accessData}');
-
-                      print('-aaaa--${accessData}');
-                      data1.clear();
-                      data1 = ['Select'];
-
-                      for (int i = 0;
-                          i < (accessx['data'] as List).length;
-                          i++) {
-                        if (accessData
-                            .contains('${accessx['data'][i]['controls_id']}')) {
-                          data1.add(accessx['data'][i]['control_name']);
-                        }
-                      }
-                      log('SELCT DATA :- $data1');
-                    } catch (e) {
-                      isLoading = false;
-                    }
                     showEditDialog(id: id, renue: autoRenue);
                   },
                   child: Row(
@@ -1072,42 +1005,42 @@ class _SubscriptionDetailsScreenState extends State<SubscriptionDetailsScreen> {
                         fontSize: 16,
                         height: 55,
                         onTap: () async {
-                          controller.updateLoading(true);
+                          if (isTermAgree.value == true) {
+                            controller.updateLoading(true);
 
-                          await editSlotDetailViewModel.editSlotDetailViewModel(
-                            id: '${id}',
-                            model: {
-                              'id': '$id',
-                              // 'parking_type': isReserved.value == false
-                              //     ? 'Open Parking'
-                              //     : 'Reserved Parking',
-                              // 'contract_period': isYearly.value == true
-                              //     ? 'Yearly'
-                              //     : 'Monthly',
-                              'auto_renewal':
-                                  isAutoRenewal.value == true ? '1' : '0',
-                              // isAutoRenewal.value == true ? 'Yes' : 'No',
-                              'access_controll': '$accesControll'
-                            },
-                          );
+                            await editSlotDetailViewModel
+                                .editSlotDetailViewModel(
+                              id: '${id}',
+                              model: {
+                                'id': '$id',
+                                'auto_renewal':
+                                    isAutoRenewal.value == true ? '1' : '0',
+                                'access_controll': '$accesControll'
+                              },
+                            );
 
-                          if (editSlotDetailViewModel
-                                  .editSlotDetailApiResponse.status
-                                  .toString() ==
-                              Status.COMPLETE.toString()) {
-                            controller.updateLoading(false);
-                            Get.back();
-                            Get.back();
+                            if (editSlotDetailViewModel
+                                    .editSlotDetailApiResponse.status
+                                    .toString() ==
+                                Status.COMPLETE.toString()) {
+                              controller.updateLoading(false);
+                              Get.back();
+                              Get.back();
+                              CommonSnackBar.commonSnackBar(
+                                  message: 'Record Successfully Updated!');
+                            }
+                            if (editSlotDetailViewModel
+                                    .editSlotDetailApiResponse.status
+                                    .toString() ==
+                                Status.ERROR.toString()) {
+                              controller.updateLoading(false);
+
+                              CommonSnackBar.commonSnackBar(
+                                  message: 'Try Again');
+                            }
+                          } else {
                             CommonSnackBar.commonSnackBar(
-                                message: 'Record Successfully Updated!');
-                          }
-                          if (editSlotDetailViewModel
-                                  .editSlotDetailApiResponse.status
-                                  .toString() ==
-                              Status.ERROR.toString()) {
-                            controller.updateLoading(false);
-
-                            CommonSnackBar.commonSnackBar(message: 'Try Again');
+                                message: 'Accept Condition first');
                           }
                         },
                       );
@@ -1307,5 +1240,36 @@ class _SubscriptionDetailsScreenState extends State<SubscriptionDetailsScreen> {
         );
       },
     );
+  }
+
+  fetchData(index) {
+    try {
+      accessData.clear();
+
+      if ((data['data'] as List).length != selectedItem.length) {
+        print('ohh no bar bar andar');
+        selectedItem.add('Select');
+      }
+
+      accessData = ['Select'];
+      data['data'][index]['access_control']
+          .toString()
+          .replaceFirst('[', '')
+          .replaceAll(']', '')
+          .split(',')
+          .forEach((element) {
+        accessData.add(element.toString().trim().toString());
+      });
+      data1.clear();
+      data1 = ['Select'];
+
+      for (int i = 0; i < (accessx['data'] as List).length; i++) {
+        if (accessData.contains('${accessx['data'][i]['controls_id']}')) {
+          data1.add(accessx['data'][i]['control_name']);
+        }
+      }
+    } catch (e) {
+      isLoading = false;
+    }
   }
 }

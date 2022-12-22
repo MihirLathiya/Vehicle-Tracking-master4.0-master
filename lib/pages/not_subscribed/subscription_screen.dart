@@ -219,11 +219,16 @@ class _SubScriptionScreenState extends State<SubScriptionScreen> {
                                   },
                                 ).toList(),
                                 onChanged: (val) {
-                                  setState(
-                                    () {
-                                      duration = val.toString();
-                                    },
-                                  );
+                                  try {
+                                    setState(
+                                      () {
+                                        duration = val.toString();
+                                      },
+                                    );
+                                  } catch (e) {
+                                    CommonSnackBar.commonSnackBar(
+                                        message: 'Something wrong');
+                                  }
                                 },
                               ),
                             ),
