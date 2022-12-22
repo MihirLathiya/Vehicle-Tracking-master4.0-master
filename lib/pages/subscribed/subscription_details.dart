@@ -7,6 +7,7 @@ import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 import 'package:vehicletracking/models/apis/api_response.dart';
+import 'package:vehicletracking/pages/payment/order_summary_screen.dart';
 import 'package:vehicletracking/pages/subscribed/slot_details_screen.dart';
 import 'package:vehicletracking/prefrence_manager/prefrence_manager.dart';
 import 'package:vehicletracking/utils/app_assets.dart';
@@ -52,6 +53,8 @@ class _SubscriptionDetailsScreenState extends State<SubscriptionDetailsScreen> {
   RxBool isAutoRenewal = true.obs;
   RxBool isTermAgree = false.obs;
   List accesControll = ['NA'];
+  List accesControllName = ['NA'];
+  List accesControllPrice = ['NA'];
   TextEditingController header = TextEditingController();
   TextEditingController des = TextEditingController();
 
@@ -841,6 +844,7 @@ class _SubscriptionDetailsScreenState extends State<SubscriptionDetailsScreen> {
         }
         if (controller.accessApiResponse.status == Status.COMPLETE) {
           dynamic accessData1 = controller.accessApiResponse.data;
+          log('ACCESS PRICE :- $accessData1');
           changeAccessControlList.clear();
 
           for (int i = 0; i < (accessData1['data'] as List).length; i++) {
@@ -888,20 +892,30 @@ class _SubscriptionDetailsScreenState extends State<SubscriptionDetailsScreen> {
                             commonCheckboxValue[index].value = value ?? false;
                             if (commonCheckboxValue[index].value == true) {
                               accesControll.add(
-                                  '"${accessData1['data'][index]['controls_id']}"');
-                              // accesControllPrice
-                              //     .add(accessData['data'][index]['controls_prize']);
+                                  '${accessData1['data'][index]['controls_id']}');
+                              accesControllName.add(
+                                  '${accessData1['data'][index]['control_name']}');
+                              accesControllPrice.add(
+                                  '${accessData1['data'][index]['prize']}');
                             } else {
                               accesControll.remove(
-                                  '"${accessData1['data'][index]['controls_id']}"');
-                              // accesControllPrice
-                              //     .remove(accessData['data'][index]['controls_prize']);
+                                  '${accessData1['data'][index]['controls_id']}');
+                              accesControllName.remove(
+                                  '${accessData1['data'][index]['control_name']}');
+                              accesControllPrice.remove(
+                                  '${accessData1['data'][index]['prize']}');
                             }
 
-                            if (accesControll.contains('NA')) {
+                            if (accesControll.contains('NA') ||
+                                accesControllName.contains('NA') ||
+                                accesControllPrice.contains('NA')) {
                               accesControll.remove('NA');
+                              accesControllName.remove('NA');
+                              accesControllPrice.remove('NA');
                             }
                             log('ACCES LIST :- $accesControll');
+                            log('ACCES LIST :- $accesControllName');
+                            log('ACCES LIST :- $accesControllPrice');
                           },
                         ),
                       ),
@@ -993,59 +1007,38 @@ class _SubscriptionDetailsScreenState extends State<SubscriptionDetailsScreen> {
               ),
             ),
             width05,
-            Expanded(child: GetBuilder<EditSlotDetailViewModel>(
-              builder: (controller) {
-                return controller.isLoading == true
-                    ? Center(
-                        child: CircularProgressIndicator(),
-                      )
-                    : AppFillButton(
-                        title: 'Save Changes',
-                        radius: 10,
-                        fontSize: 16,
-                        height: 55,
-                        onTap: () async {
-                          if (isTermAgree.value == true) {
-                            controller.updateLoading(true);
-
-                            await editSlotDetailViewModel
-                                .editSlotDetailViewModel(
-                              id: '${id}',
-                              model: {
-                                'id': '$id',
-                                'auto_renewal':
-                                    isAutoRenewal.value == true ? '1' : '0',
-                                'access_controll': '$accesControll'
-                              },
-                            );
-
-                            if (editSlotDetailViewModel
-                                    .editSlotDetailApiResponse.status
-                                    .toString() ==
-                                Status.COMPLETE.toString()) {
-                              controller.updateLoading(false);
-                              Get.back();
-                              Get.back();
-                              CommonSnackBar.commonSnackBar(
-                                  message: 'Record Successfully Updated!');
-                            }
-                            if (editSlotDetailViewModel
-                                    .editSlotDetailApiResponse.status
-                                    .toString() ==
-                                Status.ERROR.toString()) {
-                              controller.updateLoading(false);
-
-                              CommonSnackBar.commonSnackBar(
-                                  message: 'Try Again');
-                            }
-                          } else {
-                            CommonSnackBar.commonSnackBar(
-                                message: 'Accept Condition first');
-                          }
-                        },
-                      );
-              },
-            )),
+            Expanded(
+              child: AppFillButton(
+                title: 'Save Changes',
+                radius: 10,
+                fontSize: 16,
+                height: 55,
+                onTap: () async {
+                  log('ACCESS LIST :- ${accesControll}');
+                  if (isTermAgree.value == true) {
+                    var x = 0;
+                    for (int i = 0; i < accesControllPrice.length; i++) {
+                      x += int.parse(accesControllPrice[i]);
+                    }
+                    Get.to(
+                      () => OrderSummaryScreen(
+                        subId: id,
+                        planPrice: 'NA',
+                        slotQuntity: 1,
+                        totalAccessPrice: x,
+                        accessController: accesControll,
+                        accessPrice: accesControllPrice,
+                        access: accesControllName,
+                        renual: isAutoRenewal.value == true ? '1' : '0',
+                      ),
+                    );
+                  } else {
+                    CommonSnackBar.commonSnackBar(
+                        message: 'Accept Condition first');
+                  }
+                },
+              ),
+            ),
           ],
         ),
         height15,

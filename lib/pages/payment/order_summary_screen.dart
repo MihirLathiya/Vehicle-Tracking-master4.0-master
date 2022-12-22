@@ -26,6 +26,7 @@ class OrderSummaryScreen extends StatefulWidget {
   final totalAccessPrice;
   final slotList;
   final access;
+  final renual;
 
   final vehicleNumber, accessController, accessPrice;
   final price;
@@ -46,7 +47,8 @@ class OrderSummaryScreen extends StatefulWidget {
       this.totalAccessPrice,
       this.subId,
       this.slotList,
-      this.access})
+      this.access,
+      this.renual})
       : super(key: key);
 
   @override
@@ -182,6 +184,7 @@ class _OrderSummaryScreenState extends State<OrderSummaryScreen> {
                                   log('access Controller ${widget.accessController}');
                                   log(' slotList: selectedSlot, ${widget.slotList}');
                                   Get.to(() => PaymentScreen(
+                                      renuea: widget.renual,
                                       slotList: widget.slotList,
                                       subId: widget.subId,
                                       total: paymentData['data']['amount'],

@@ -178,13 +178,7 @@ class _SlotDetailsScreenState extends State<SlotDetailsScreen> {
           GetBuilder<ImageController>(
             builder: (controller) {
               if (controller.loading == true) {
-                return IconButton(
-                    onPressed: () {
-                      Get.to(
-                        () => SettingScreen(),
-                      );
-                    },
-                    icon: Icon(Icons.menu));
+                return SizedBox();
               } else {
                 return SafeArea(
                   child: Align(

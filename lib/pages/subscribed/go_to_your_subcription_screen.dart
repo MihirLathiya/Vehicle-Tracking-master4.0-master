@@ -5,8 +5,9 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
+import 'package:vehicletracking/models/apis/api_response.dart';
+import 'package:vehicletracking/pages/not_subscribed/choose_plan_screen.dart';
 import 'package:vehicletracking/pages/not_subscribed/parking_slot_screen.dart';
-import 'package:vehicletracking/pages/subscribed/slot_details_screen.dart';
 import 'package:vehicletracking/pages/subscribed/subscription_details.dart';
 import 'package:vehicletracking/prefrence_manager/prefrence_manager.dart';
 import 'package:vehicletracking/utils/app_assets.dart';
@@ -16,6 +17,7 @@ import 'package:vehicletracking/utils/app_text_style.dart';
 import 'package:vehicletracking/utils/validators.dart';
 import 'package:vehicletracking/view_model/add_number_view_model.dart';
 import 'package:vehicletracking/widgets/app_button.dart';
+import 'package:vehicletracking/widgets/app_text_form_field.dart';
 
 class GotoYourSubscriptionScreen extends StatefulWidget {
   const GotoYourSubscriptionScreen({Key key}) : super(key: key);
@@ -807,41 +809,41 @@ class _GotoYourSubscriptionScreenState
                                   log('AVAIBLITY :- ${await request.body}');
                                   var x = jsonDecode(await request.body);
                                   if (x['status'] == true) {
-                                    if (type == 'Open') {
+                                    if (type == 'Open' || type == 'open') {
                                       log('TYPE IS OPEN');
-
-                                      var headers = {
-                                        'Authorization':
-                                            'Bearer ${PreferenceManager.getBariear()}'
-                                      };
-                                      var request = http.MultipartRequest(
-                                          'POST',
-                                          Uri.parse(
-                                              'https://i.invoiceapi.ml/api/customer/addSlot'));
-                                      request.fields.addAll({
-                                        'subscription_id': '${subId}',
-                                        'parking_type': 'Open',
-                                        'slot_quantity': '${remove.text}',
-                                      });
-
-                                      request.headers.addAll(headers);
-
-                                      http.StreamedResponse response =
-                                          await request.send();
-
-                                      if (response.statusCode == 200) {
-                                        print(await response.stream
-                                            .bytesToString());
-                                        CommonSnackBar.commonSnackBar(
-                                            message: 'Successfully added');
-
-                                        Get.offAll(() => SlotDetailsScreen());
-                                      } else {
-                                        Get.back();
-                                        log('ERROR:- ${response.reasonPhrase}');
-                                        CommonSnackBar.commonSnackBar(
-                                            message: 'Something went wrong');
-                                      }
+                                      showAddDialog(index);
+                                      // var headers = {
+                                      //   'Authorization':
+                                      //       'Bearer ${PreferenceManager.getBariear()}'
+                                      // };
+                                      // var request = http.MultipartRequest(
+                                      //     'POST',
+                                      //     Uri.parse(
+                                      //         'https://i.invoiceapi.ml/api/customer/addSlot'));
+                                      // request.fields.addAll({
+                                      //   'subscription_id': '${subId}',
+                                      //   'parking_type': 'Open',
+                                      //   'slot_quantity': '${remove.text}',
+                                      // });
+                                      //
+                                      // request.headers.addAll(headers);
+                                      //
+                                      // http.StreamedResponse response =
+                                      //     await request.send();
+                                      //
+                                      // if (response.statusCode == 200) {
+                                      //   print(await response.stream
+                                      //       .bytesToString());
+                                      //   CommonSnackBar.commonSnackBar(
+                                      //       message: 'Successfully added');
+                                      //
+                                      //   Get.offAll(() => SlotDetailsScreen());
+                                      // } else {
+                                      //   Get.back();
+                                      //   log('ERROR:- ${response.reasonPhrase}');
+                                      //   CommonSnackBar.commonSnackBar(
+                                      //       message: 'Something went wrong');
+                                      // }
                                     } else {
                                       PreferenceManager.setPlaceId(data['data']
                                               [index]['place_id']
@@ -859,7 +861,8 @@ class _GotoYourSubscriptionScreenState
                                           subId: data['data'][index]['id'],
                                           vehicleType: data['data'][index]
                                               ['vehicle_type'],
-                                          slotType: 'reserved',
+                                          slotType: data['data'][index]
+                                              ['parking_type'],
                                           slotQuntity: remove.text,
                                           placeId: data['data'][index]
                                               ['place_id'],
@@ -1149,142 +1152,144 @@ class _GotoYourSubscriptionScreenState
     }
   }
 
-  // void showAddDialog(index) {
-  //   showDialog(
-  //     context: context,
-  //     builder: (context) {
-  //       return StatefulBuilder(
-  //         builder: (context, setState1) {
-  //           return Dialog(
-  //             shape: RoundedRectangleBorder(
-  //                 borderRadius: BorderRadius.circular(10)),
-  //             elevation: 16,
-  //             insetPadding:
-  //                 const EdgeInsets.symmetric(horizontal: 20, vertical: 60),
-  //             child: ListView(
-  //               shrinkWrap: true,
-  //               padding:
-  //                   const EdgeInsets.symmetric(horizontal: 25, vertical: 25),
-  //               children: <Widget>[
-  //                 ListView.builder(
-  //                   shrinkWrap: true,
-  //                   itemCount: Counter,
-  //                   itemBuilder: (context, index) {
-  //                     return Column(
-  //                       children: [
-  //                         AppTextField(
-  //                           labelText: 'Vehicle Number',
-  //                           controller: vehicleNumberList[index],
-  //                         ),
-  //                         height15,
-  //                       ],
-  //                     );
-  //                   },
-  //                 ),
-  //                 height15,
-  //                 GestureDetector(
-  //                   onTap: () {
-  //                     setState1(() {
-  //                       Counter++;
-  //                       vehicleNumberList.insert(
-  //                           Counter - 1, TextEditingController());
-  //                     });
-  //                   },
-  //                   child: Row(
-  //                     mainAxisAlignment: MainAxisAlignment.end,
-  //                     children: <Widget>[
-  //                       const Icon(
-  //                         Icons.add,
-  //                         color: appColor,
-  //                       ),
-  //                       Text(
-  //                         'Add More',
-  //                         style: AppTextStyle.normalSemiBold16.copyWith(
-  //                           color: appColor,
-  //                         ),
-  //                       ),
-  //                     ],
-  //                   ),
-  //                 ),
-  //                 height15,
-  //                 Row(
-  //                   children: [
-  //                     Expanded(
-  //                       child: AppBorderButton(
-  //                         onTap: () {
-  //                           Get.back();
-  //                         },
-  //                         title: 'Back',
-  //                         height: 45,
-  //                         radius: 10,
-  //                       ),
-  //                     ),
-  //                     width10,
-  //                     Expanded(
-  //                       child: AppFillButton(
-  //                         onTap: () async {
-  //                           if (vehicleNumber.text.isNotEmpty) {
-  //                             vehicleNumberList1.clear();
-  //                             for (int i = 0;
-  //                                 i < vehicleNumberList.length;
-  //                                 i++) {
-  //                               vehicleNumberList1.insert(
-  //                                   i, vehicleNumberList[i].text);
-  //                             }
-  //                             log('HELLO LISTS :- ${vehicleNumberList1}');
-  //                             await addNumberViewModel
-  //                                 .addNumberViewModel(model: {
-  //                               'vehicle_number': ['${vehicleNumber.text}']
-  //                             });
-  //                             if (addNumberViewModel
-  //                                     .addNumberApiResponse.status ==
-  //                                 Status.COMPLETE) {
-  //                               // PreferenceManager.setDuration(duration);
-  //
-  //                               PreferenceManager.setDuration(data['data']
-  //                                           [index]['paln_duration'] ==
-  //                                       null
-  //                                   ? '1 month'
-  //                                   : '${data['data'][index]['paln_duration']}');
-  //                               Get.to(() => ChoosePlanScreen(
-  //                                     subId:
-  //                                         data['data'][index]['id'].toString(),
-  //                                     placeId: data['data'][index]['place_id']
-  //                                         .toString(),
-  //                                     duration:
-  //                                         '${data['data'][index]['paln_duration'].toString() ?? '1 month'}',
-  //                                     location: data['data'][index]
-  //                                             ['parking_location']
-  //                                         .toString(),
-  //                                     vehicleType: data['data'][index]
-  //                                             ['vehicle_type'] ??
-  //                                         'Two wheel',
-  //                                     vehicleNumber: vehicleNumberList1,
-  //                                     slotType: x == 0 ? 'Open' : 'Reserved',
-  //                                     slotQuntity: remove.text.toString(),
-  //                                   ));
-  //                               // remove.clear();
-  //                             } else {
-  //                               CommonSnackBar.commonSnackBar(
-  //                                   message: 'Try Again...');
-  //                             }
-  //                           } else {
-  //                             log('ENTER NO');
-  //                           }
-  //                         },
-  //                         title: 'Next',
-  //                         height: 45,
-  //                         radius: 10,
-  //                       ),
-  //                     )
-  //                   ],
-  //                 ),
-  //               ],
-  //             ),
-  //           );
-  //         },
-  //       );
-  //     },
-  //   );
-  // }
+  void showAddDialog(index) {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return StatefulBuilder(
+          builder: (context, setState1) {
+            return Dialog(
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10)),
+              elevation: 16,
+              insetPadding:
+                  const EdgeInsets.symmetric(horizontal: 20, vertical: 60),
+              child: ListView(
+                shrinkWrap: true,
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 25, vertical: 25),
+                children: <Widget>[
+                  ListView.builder(
+                    shrinkWrap: true,
+                    itemCount: Counter,
+                    itemBuilder: (context, index) {
+                      return Column(
+                        children: [
+                          AppTextField(
+                            labelText: 'Vehicle Number',
+                            controller: vehicleNumberList[index],
+                          ),
+                          height15,
+                        ],
+                      );
+                    },
+                  ),
+                  height15,
+                  GestureDetector(
+                    onTap: () {
+                      setState1(() {
+                        Counter++;
+                        vehicleNumberList.insert(
+                            Counter - 1, TextEditingController());
+                      });
+                    },
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: <Widget>[
+                        const Icon(
+                          Icons.add,
+                          color: appColor,
+                        ),
+                        Text(
+                          'Add More',
+                          style: AppTextStyle.normalSemiBold16.copyWith(
+                            color: appColor,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  height15,
+                  Row(
+                    children: [
+                      Expanded(
+                        child: AppBorderButton(
+                          onTap: () {
+                            Get.back();
+                          },
+                          title: 'Back',
+                          height: 45,
+                          radius: 10,
+                        ),
+                      ),
+                      width10,
+                      Expanded(
+                        child: AppFillButton(
+                          onTap: () async {
+                            if (vehicleNumber.text.isNotEmpty) {
+                              vehicleNumberList1.clear();
+                              for (int i = 0;
+                                  i < vehicleNumberList.length;
+                                  i++) {
+                                vehicleNumberList1.insert(
+                                    i, vehicleNumberList[i].text);
+                              }
+                              log('HELLO LISTS :- ${vehicleNumberList1}');
+                              await addNumberViewModel.addNumberViewModel(
+                                  model: {
+                                    'vehicle_number': '$vehicleNumberList1'
+                                  });
+                              if (addNumberViewModel
+                                      .addNumberApiResponse.status ==
+                                  Status.COMPLETE) {
+                                // PreferenceManager.setDuration(duration);
+
+                                PreferenceManager.setDuration(data['data']
+                                            [index]['paln_duration'] ==
+                                        null
+                                    ? '1 month'
+                                    : '${data['data'][index]['paln_duration']}');
+                                Get.to(() => ChoosePlanScreen(
+                                      subId:
+                                          data['data'][index]['id'].toString(),
+                                      placeId: data['data'][index]['place_id']
+                                          .toString(),
+                                      duration:
+                                          '${data['data'][index]['paln_duration'].toString() ?? '1 month'}',
+                                      location: data['data'][index]
+                                              ['parking_location']
+                                          .toString(),
+                                      vehicleType: data['data'][index]
+                                              ['vehicle_type'] ??
+                                          'Two wheel',
+                                      vehicleNumber: vehicleNumberList1,
+                                      slotType: x == 0 ? 'open' : 'reserved',
+                                      slotQuntity: remove.text.toString(),
+                                      // slotList: ,
+                                    ));
+
+                                // remove.clear();
+                              } else {
+                                CommonSnackBar.commonSnackBar(
+                                    message: 'Try Again...');
+                              }
+                            } else {
+                              log('ENTER NO');
+                            }
+                          },
+                          title: 'Next',
+                          height: 45,
+                          radius: 10,
+                        ),
+                      )
+                    ],
+                  ),
+                ],
+              ),
+            );
+          },
+        );
+      },
+    );
+  }
 }

@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
+import 'package:vehicletracking/models/apis/api_response.dart';
 import 'package:vehicletracking/pages/subscribed/slot_details_screen.dart';
 import 'package:vehicletracking/prefrence_manager/prefrence_manager.dart';
 import 'package:vehicletracking/utils/app_assets.dart';
@@ -15,6 +16,7 @@ import 'package:vehicletracking/utils/app_static_decoration.dart';
 import 'package:vehicletracking/utils/app_text_style.dart';
 import 'package:vehicletracking/utils/text_form_field.dart';
 import 'package:vehicletracking/utils/validators.dart';
+import 'package:vehicletracking/view_model/edit_slot_detail_view_model.dart';
 import 'package:vehicletracking/widgets/app_button.dart';
 
 class PaymentScreen extends StatefulWidget {
@@ -24,6 +26,8 @@ class PaymentScreen extends StatefulWidget {
   final total;
   final subId;
   final slotList;
+  final renuea;
+
   const PaymentScreen(
       {Key key,
       this.duration,
@@ -37,7 +41,8 @@ class PaymentScreen extends StatefulWidget {
       this.placeId,
       this.total,
       this.subId,
-      this.slotList})
+      this.slotList,
+      this.renuea})
       : super(key: key);
 
   @override
@@ -51,6 +56,8 @@ class _PaymentScreenState extends State<PaymentScreen> {
   TextEditingController nameOnCardController = TextEditingController();
   bool isCardSave = false;
   bool cardLoad = false;
+  EditSlotDetailViewModel editSlotDetailViewModel =
+      Get.put(EditSlotDetailViewModel());
   dynamic getCards;
   loadSaveCard() async {
     setState(() {
@@ -92,9 +99,11 @@ class _PaymentScreenState extends State<PaymentScreen> {
   }
 
   bool loading = false;
-  List x;
+
   @override
   Widget build(BuildContext context) {
+    log('ALL DATA :- ${widget.vehicleNumber},${widget.subId},${widget.slotType},${widget.slotQuntity}');
+    log('ALL DATA :- ${PreferenceManager.getAccountNo()}');
     return Scaffold(
       extendBodyBehindAppBar: true,
       appBar: AppBar(
@@ -362,16 +371,14 @@ class _PaymentScreenState extends State<PaymentScreen> {
                           http.StreamedResponse response = await request.send();
 
                           if (response.statusCode == 200) {
-                            var header = {
-                              'Authorization':
-                                  'Bearer ${PreferenceManager.getBariear()}'
-                            };
-
                             /// ADD SLOT
-                            if (widget.subId != null || widget.subId == '') {
+                            if (widget.subId != null && widget.renuea == null) {
                               log('messagesss ${widget.subId}');
 
                               await addSlot();
+                            } else if (widget.subId != null &&
+                                widget.renuea != null) {
+                              await editSlot();
                             }
 
                             /// CREATE SUBSCRIPTION
@@ -388,9 +395,12 @@ class _PaymentScreenState extends State<PaymentScreen> {
                         /// CARD NOT SAVE
                         else {
                           /// ADD SLOT
-                          if (widget.subId != null || widget.subId == '') {
+                          if (widget.subId != null && widget.renuea == null) {
                             log('messagesss ${widget.subId}');
                             await addSlot();
+                          } else if (widget.subId != null &&
+                              widget.renuea != null) {
+                            await editSlot();
                           }
 
                           /// CREATE SUBSCRIPTION
@@ -413,29 +423,74 @@ class _PaymentScreenState extends State<PaymentScreen> {
     );
   }
 
-  addSlot() async {
-    selected1.clear();
-    for (int i = 0; i < selected.length; i++) {
-      selected1.addAll({'sloat_list[$i]': '${selected[i]}'});
+  editSlot() async {
+    controllers1.clear();
+
+    for (int i = 0; i < controllers.length; i++) {
+      controllers1.addAll({'access_controls[$i]': '${controllers[i]}'});
     }
-    Map<String, dynamic> bodyy11 = {
-      'subscription_id': '${widget.subId}',
-      'parking_type': '${widget.slotType}',
-      'slot_quantity': '${widget.slotQuntity}',
-      'vehicle_number': '${widget.vehicleNumber}'
-    };
-    bodyy11.addAll(selected1);
-    log('BODTYS :- $bodyy11');
-    var request = await http.post(
-        Uri.parse('https://i.invoiceapi.ml/api/customer/addSlot'),
-        body: bodyy11,
-        headers: headers);
-    log('RESPONSE CODE :- ${request.statusCode}');
-    if (request.statusCode == 200) {
+    var data = {'id': '${widget.subId}', 'auto_renewal': widget.renuea};
+    data.addAll(controllers1);
+    await editSlotDetailViewModel.editSlotDetailViewModel(
+      id: '${widget.subId}',
+      model: data,
+    );
+    if (editSlotDetailViewModel.editSlotDetailApiResponse.status.toString() ==
+        Status.COMPLETE.toString()) {
       Get.offAll(() => SlotDetailsScreen());
-      CommonSnackBar.commonSnackBar(message: 'Successfully added');
+      CommonSnackBar.commonSnackBar(message: 'Record Successfully Updated!');
+    }
+    if (editSlotDetailViewModel.editSlotDetailApiResponse.status.toString() ==
+        Status.ERROR.toString()) {
+      CommonSnackBar.commonSnackBar(message: 'Try Again');
+    }
+  }
+
+  addSlot() async {
+    if (widget.slotType == 'open' || widget.slotType == 'Open') {
+      Map<String, dynamic> bodyy11 = {
+        'subscription_id': '${widget.subId}',
+        'parking_type': '${widget.slotType}',
+        'slot_quantity': '${widget.slotQuntity}',
+        'vehicle_number': '${widget.vehicleNumber}'
+      };
+      log('BODTYS :- $bodyy11');
+      var request = await http.post(
+          Uri.parse('https://i.invoiceapi.ml/api/customer/addSlot'),
+          body: bodyy11,
+          headers: headers);
+      log('RESPONSE CODE :- ${request.statusCode}');
+      if (request.statusCode == 200) {
+        Get.offAll(() => SlotDetailsScreen());
+        CommonSnackBar.commonSnackBar(message: 'Successfully added');
+      } else {
+        CommonSnackBar.commonSnackBar(message: '${request.reasonPhrase}');
+      }
     } else {
-      CommonSnackBar.commonSnackBar(message: '${request.reasonPhrase}');
+      selected1.clear();
+      for (int i = 0; i < selected.length; i++) {
+        selected1.addAll({'sloat_list[$i]': '${selected[i]}'});
+      }
+      Map<String, dynamic> bodyy11 = {
+        'subscription_id': '${widget.subId}',
+        'parking_type': 'Reserved',
+        'slot_quantity': '${widget.slotQuntity}',
+        'vehicle_number': '${widget.vehicleNumber}'
+      };
+      bodyy11.addAll(selected1);
+      log('BODTYS :- $bodyy11');
+      var request = await http.post(
+          Uri.parse('https://i.invoiceapi.ml/api/customer/addSlot'),
+          body: bodyy11,
+          headers: headers);
+      log('RESPONSE CODE :- ${request.statusCode}');
+      if (request.statusCode == 200) {
+        Get.offAll(() => SlotDetailsScreen());
+        CommonSnackBar.commonSnackBar(message: 'Successfully added');
+      } else {
+        log('ERROR :- ${request.reasonPhrase}');
+        CommonSnackBar.commonSnackBar(message: '${request.reasonPhrase}');
+      }
     }
   }
 
