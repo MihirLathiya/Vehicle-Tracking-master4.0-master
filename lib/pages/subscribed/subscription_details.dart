@@ -35,16 +35,9 @@ class SubscriptionDetailsScreen extends StatefulWidget {
 }
 
 class _SubscriptionDetailsScreenState extends State<SubscriptionDetailsScreen> {
-  // TextEditingController parkingTypeController = TextEditingController();
-  // TextEditingController parkingNumberController = TextEditingController();
-  // TextEditingController startingDateController = TextEditingController();
-  // TextEditingController endDateController = TextEditingController();
-  // TextEditingController autoRenewwal = TextEditingController();
-  // TextEditingController accessControlsController = TextEditingController();
-
   List accessData = [''];
   List data1 = [''];
-  // List<String> items = ["Camera", "Phone", "Image", "Video"];
+
   List selectedItem = [];
   AccessController accessController = Get.put(AccessController());
 
