@@ -2,7 +2,6 @@ import 'dart:convert';
 import 'dart:developer';
 import 'dart:io';
 
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
@@ -184,20 +183,32 @@ class _SettingScreenState extends State<SettingScreen> {
                                     : controller.url != null
                                         ? ClipRRect(
                                             borderRadius:
-                                                BorderRadius.circular(10000),
-                                            child: CachedNetworkImage(
-                                              imageUrl: "${controller.url}",
+                                                BorderRadius.circular(1000),
+                                            child: Image.network(
+                                              '${controller.url}',
+                                              height: 45,
+                                              width: 45,
                                               fit: BoxFit.cover,
-                                              progressIndicatorBuilder:
-                                                  (context, url,
-                                                          downloadProgress) =>
-                                                      CircularProgressIndicator(
-                                                          value:
-                                                              downloadProgress
-                                                                  .progress),
-                                              errorWidget:
-                                                  (context, url, error) =>
-                                                      Icon(Icons.error),
+                                              errorBuilder:
+                                                  (context, error, stackTrace) {
+                                                return GestureDetector(
+                                                  onTap: () {
+                                                    Get.to(
+                                                      () => SettingScreen(),
+                                                    );
+                                                  },
+                                                  child: CircleAvatar(
+                                                    backgroundColor:
+                                                        Colors.white,
+                                                    radius: 20,
+                                                    child: Icon(
+                                                      Icons.person,
+                                                      color: Colors.black,
+                                                      size: 40,
+                                                    ),
+                                                  ),
+                                                );
+                                              },
                                             ),
                                           )
                                         : ClipRRect(

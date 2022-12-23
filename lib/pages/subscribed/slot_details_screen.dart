@@ -1,11 +1,9 @@
 import 'dart:convert';
 import 'dart:developer';
 
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
-import 'package:shimmer/shimmer.dart';
 import 'package:vehicletracking/models/apis/api_response.dart';
 import 'package:vehicletracking/models/response_model/get_parking_slot_res_model.dart';
 import 'package:vehicletracking/pages/not_subscribed/subscription_screen.dart';
@@ -153,7 +151,9 @@ class _SlotDetailsScreenState extends State<SlotDetailsScreen> {
                                           : '${response.data.fourWheeler}'),
                                   height15,
                                   monthlySubscriptionWidget(
-                                      '${response.data.subscription}'),
+                                      response.data.subscription == 0
+                                          ? 'Not Subscribed yet'
+                                          : '${response.data.subscription}'),
                                   height15,
                                   descriptionWidget(response),
                                 ],
@@ -193,35 +193,41 @@ class _SlotDetailsScreenState extends State<SlotDetailsScreen> {
                           );
                         },
                         child: controller.url == null
-                            ? Icon(Icons.add_a_photo_outlined)
-                            : ClipRRect(
-                                borderRadius: BorderRadius.circular(1000),
-                                child: CachedNetworkImage(
-                                  height: 45,
-                                  width: 45,
-                                  imageUrl: '${controller.url}',
-                                  fit: BoxFit.cover,
-                                  errorWidget: (context, url, error) => Padding(
-                                    padding: EdgeInsets.all(15.0),
-                                    child: IconButton(
-                                      onPressed: () {
-                                        Get.to(
-                                          () => SettingScreen(),
-                                        );
-                                      },
-                                      icon: Icon(Icons.menu),
-                                    ),
-                                  ),
-                                  progressIndicatorBuilder:
-                                      (context, url, downloadProgress) =>
-                                          Shimmer.fromColors(
-                                    baseColor: Colors.white.withOpacity(0.4),
-                                    highlightColor:
-                                        Colors.white.withOpacity(0.2),
-                                    enabled: true,
-                                    child: Container(
-                                      color: Colors.white,
-                                    ),
+                            ? CircleAvatar(
+                                backgroundColor: Colors.white,
+                                radius: 20,
+                                child: Icon(
+                                  Icons.person,
+                                  color: Colors.black,
+                                ),
+                              )
+                            : CircleAvatar(
+                                radius: 25,
+                                backgroundColor: Colors.white,
+                                child: ClipRRect(
+                                  borderRadius: BorderRadius.circular(1000),
+                                  child: Image.network(
+                                    '${controller.url}',
+                                    height: 45,
+                                    width: 45,
+                                    fit: BoxFit.cover,
+                                    errorBuilder: (context, error, stackTrace) {
+                                      return GestureDetector(
+                                        onTap: () {
+                                          Get.to(
+                                            () => SettingScreen(),
+                                          );
+                                        },
+                                        child: CircleAvatar(
+                                          backgroundColor: Colors.white,
+                                          radius: 20,
+                                          child: Icon(
+                                            Icons.person,
+                                            color: Colors.black,
+                                          ),
+                                        ),
+                                      );
+                                    },
                                   ),
                                 ),
                               ),

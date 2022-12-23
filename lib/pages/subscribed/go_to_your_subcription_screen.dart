@@ -657,52 +657,52 @@ class _GotoYourSubscriptionScreenState
                     ),
                   ),
                   height20,
-                  const Text(
-                    'Auto Renewal',
-                    style: AppTextStyle.normalSemiBold16,
-                  ),
-                  const Divider(
-                    color: borderGreyColor,
-                  ),
-                  Row(
-                    children: [
-                      ...List.generate(
-                        2,
-                        (index) => Row(
-                          children: [
-                            Text('${slots[index]}'),
-                            SizedBox(
-                              width: 10,
-                            ),
-                            GestureDetector(
-                              onTap: () {
-                                state(() {
-                                  x = index;
-                                });
-                                remove.clear();
-                              },
-                              child: Container(
-                                height: 20,
-                                width: 20,
-                                padding: EdgeInsets.all(2),
-                                decoration: BoxDecoration(
-                                  shape: BoxShape.circle,
-                                  border: Border.all(color: Colors.red),
-                                ),
-                                child: CircleAvatar(
-                                    backgroundColor: x == index
-                                        ? Colors.red
-                                        : Colors.transparent),
-                              ),
-                            ),
-                            SizedBox(
-                              width: 30,
-                            )
-                          ],
-                        ),
-                      )
-                    ],
-                  ),
+                  // const Text(
+                  //   'Auto Renewal',
+                  //   style: AppTextStyle.normalSemiBold16,
+                  // ),
+                  // const Divider(
+                  //   color: borderGreyColor,
+                  // ),
+                  // Row(
+                  //   children: [
+                  //     ...List.generate(
+                  //       2,
+                  //       (index) => Row(
+                  //         children: [
+                  //           Text('${slots[index]}'),
+                  //           SizedBox(
+                  //             width: 10,
+                  //           ),
+                  //           GestureDetector(
+                  //             onTap: () {
+                  //               state(() {
+                  //                 x = index;
+                  //               });
+                  //               remove.clear();
+                  //             },
+                  //             child: Container(
+                  //               height: 20,
+                  //               width: 20,
+                  //               padding: EdgeInsets.all(2),
+                  //               decoration: BoxDecoration(
+                  //                 shape: BoxShape.circle,
+                  //                 border: Border.all(color: Colors.red),
+                  //               ),
+                  //               child: CircleAvatar(
+                  //                   backgroundColor: x == index
+                  //                       ? Colors.red
+                  //                       : Colors.transparent),
+                  //             ),
+                  //           ),
+                  //           SizedBox(
+                  //             width: 30,
+                  //           )
+                  //         ],
+                  //       ),
+                  //     )
+                  //   ],
+                  // ),
                   height20,
                   Row(
                     children: [
@@ -1144,6 +1144,7 @@ class _GotoYourSubscriptionScreenState
         slotName.insert(
             i, '${data['data'][i]['parking_name']}..${data['data'][i]['id']}');
       }
+      slotNames = slotName[0].toString().split('..').first;
 
       log('HELLO $slotName');
       setState(() {});

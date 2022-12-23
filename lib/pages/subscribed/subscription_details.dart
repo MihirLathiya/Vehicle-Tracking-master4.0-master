@@ -42,8 +42,8 @@ class _SubscriptionDetailsScreenState extends State<SubscriptionDetailsScreen> {
   // TextEditingController autoRenewwal = TextEditingController();
   // TextEditingController accessControlsController = TextEditingController();
 
-  List accessData = ['Select'];
-  List data1 = ['Select'];
+  List accessData = [''];
+  List data1 = [''];
   // List<String> items = ["Camera", "Phone", "Image", "Video"];
   List selectedItem = [];
   AccessController accessController = Get.put(AccessController());
@@ -774,64 +774,64 @@ class _SubscriptionDetailsScreenState extends State<SubscriptionDetailsScreen> {
             ),
           ],
         ),
-        height20,
-        Row(
-          children: [
-            GestureDetector(
-              onTap: () {
-                isTermAgree.value = !isTermAgree.value;
-              },
-              child: Obx(
-                () => isTermAgree.value
-                    ? Container(
-                        height: 20,
-                        alignment: Alignment.center,
-                        decoration: BoxDecoration(
-                          color: appColor,
-                          border: Border.all(color: appColor),
-                          borderRadius: BorderRadius.circular(5),
-                        ),
-                        child: const Icon(
-                          Icons.check_rounded,
-                          color: whiteColor,
-                          size: 18,
-                        ),
-                      )
-                    : Container(
-                        height: 20,
-                        width: 20,
-                        decoration: BoxDecoration(
-                          border: Border.all(color: appColor),
-                          borderRadius: BorderRadius.circular(5),
-                        ),
-                      ),
-              ),
-            ),
-            const SizedBox(
-              width: 10,
-            ),
-            RichText(
-              text: TextSpan(
-                children: [
-                  TextSpan(
-                    text: 'I Agree to the ',
-                    style: AppTextStyle.normalRegular14.copyWith(
-                      color: greyColor,
-                    ),
-                  ),
-                  TextSpan(
-                    text: 'Terms & Conditions',
-                    style: AppTextStyle.normalRegular14.copyWith(
-                      color: appColor,
-                      decoration: TextDecoration.underline,
-                    ),
-                    recognizer: TapGestureRecognizer()..onTap = () {},
-                  ),
-                ],
-              ),
-            ),
-          ],
-        )
+        // height20,
+        // Row(
+        //   children: [
+        //     GestureDetector(
+        //       onTap: () {
+        //         isTermAgree.value = !isTermAgree.value;
+        //       },
+        //       child: Obx(
+        //         () => isTermAgree.value
+        //             ? Container(
+        //                 height: 20,
+        //                 alignment: Alignment.center,
+        //                 decoration: BoxDecoration(
+        //                   color: appColor,
+        //                   border: Border.all(color: appColor),
+        //                   borderRadius: BorderRadius.circular(5),
+        //                 ),
+        //                 child: const Icon(
+        //                   Icons.check_rounded,
+        //                   color: whiteColor,
+        //                   size: 18,
+        //                 ),
+        //               )
+        //             : Container(
+        //                 height: 20,
+        //                 width: 20,
+        //                 decoration: BoxDecoration(
+        //                   border: Border.all(color: appColor),
+        //                   borderRadius: BorderRadius.circular(5),
+        //                 ),
+        //               ),
+        //       ),
+        //     ),
+        //     const SizedBox(
+        //       width: 10,
+        //     ),
+        //     RichText(
+        //       text: TextSpan(
+        //         children: [
+        //           TextSpan(
+        //             text: 'I Agree to the ',
+        //             style: AppTextStyle.normalRegular14.copyWith(
+        //               color: greyColor,
+        //             ),
+        //           ),
+        //           TextSpan(
+        //             text: 'Terms & Conditions',
+        //             style: AppTextStyle.normalRegular14.copyWith(
+        //               color: appColor,
+        //               decoration: TextDecoration.underline,
+        //             ),
+        //             recognizer: TapGestureRecognizer()..onTap = () {},
+        //           ),
+        //         ],
+        //       ),
+        //     ),
+        //   ],
+        // )
       ],
     );
   }
@@ -872,7 +872,7 @@ class _SubscriptionDetailsScreenState extends State<SubscriptionDetailsScreen> {
             children: List.generate(
               changeAccessControlList.length,
               (index) => SizedBox(
-                width: 140,
+                width: 130,
                 child: Padding(
                   padding: const EdgeInsets.symmetric(vertical: 5.0),
                   child: Row(
@@ -1014,14 +1014,14 @@ class _SubscriptionDetailsScreenState extends State<SubscriptionDetailsScreen> {
             width05,
             Expanded(
               child: AppFillButton(
-                title: 'Save Changes',
-                radius: 10,
-                fontSize: 16,
-                height: 55,
-                onTap: () async {
-                  log('ACCESS LIST :- ${accesControll}');
-                  log('ACCESS LIST :- ${id}');
-                  if (isTermAgree.value == true) {
+                  title: 'Save Changes',
+                  radius: 10,
+                  fontSize: 16,
+                  height: 55,
+                  onTap: () async {
+                    log('ACCESS LIST :- ${accesControll}');
+                    log('ACCESS LIST :- ${id}');
+                    // if (isTermAgree.value == true) {
                     var x = 0;
                     for (int i = 0; i < accesControllPrice.length; i++) {
                       x += int.parse(accesControllPrice[i]);
@@ -1033,9 +1033,11 @@ class _SubscriptionDetailsScreenState extends State<SubscriptionDetailsScreen> {
                             'Bearer ${PreferenceManager.getBariear()}'
                       };
                       var request = http.MultipartRequest(
-                          'POST',
-                          Uri.parse(
-                              'https://i.invoiceapi.ml/api/customer/editSlotDetails'));
+                        'POST',
+                        Uri.parse(
+                          'https://i.invoiceapi.ml/api/customer/editSlotDetails',
+                        ),
+                      );
                       request.fields.addAll({
                         'id': '${id}',
                         'auto_renewal': isAutoRenewal.value == true ? '1' : '0'
@@ -1067,12 +1069,13 @@ class _SubscriptionDetailsScreenState extends State<SubscriptionDetailsScreen> {
                         ),
                       );
                     }
-                  } else {
-                    CommonSnackBar.commonSnackBar(
-                        message: 'Accept Condition first');
                   }
-                },
-              ),
+                  // else {
+                  //   CommonSnackBar.commonSnackBar(
+                  //       message: 'Accept Condition first');
+                  // }
+                  // },
+                  ),
             ),
           ],
         ),
@@ -1274,12 +1277,7 @@ class _SubscriptionDetailsScreenState extends State<SubscriptionDetailsScreen> {
     try {
       accessData.clear();
 
-      if ((data['data'] as List).length != selectedItem.length) {
-        print('ohh no bar bar andar');
-        selectedItem.add('Select');
-      }
-
-      accessData = ['Select'];
+      accessData = [''];
       data['data'][index]['access_control']
           .toString()
           .replaceFirst('[', '')
@@ -1289,12 +1287,16 @@ class _SubscriptionDetailsScreenState extends State<SubscriptionDetailsScreen> {
         accessData.add(element.toString().trim().toString());
       });
       data1.clear();
-      data1 = ['Select'];
+      data1 = [''];
 
       for (int i = 0; i < (accessx['data'] as List).length; i++) {
         if (accessData.contains('${accessx['data'][i]['controls_id']}')) {
-          data1.add(accessx['data'][i]['control_name']);
+          data1.insert(i, accessx['data'][i]['control_name']);
         }
+      }
+      if ((data['data'] as List).length != selectedItem.length) {
+        print('ohh no bar bar andar');
+        selectedItem.add(data1[index]);
       }
     } catch (e) {
       isLoading = false;

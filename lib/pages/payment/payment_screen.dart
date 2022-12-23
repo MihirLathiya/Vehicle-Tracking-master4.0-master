@@ -427,7 +427,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
     controllers1.clear();
 
     for (int i = 0; i < controllers.length; i++) {
-      controllers1.addAll({'access_controls[$i]': '${controllers[i]}'});
+      controllers1.addAll({'access_control[$i]': '${controllers[i]}'});
     }
     var data = {'id': '${widget.subId}', 'auto_renewal': widget.renuea};
     data.addAll(controllers1);
