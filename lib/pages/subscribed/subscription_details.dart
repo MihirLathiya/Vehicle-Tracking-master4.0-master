@@ -896,16 +896,19 @@ class _SubscriptionDetailsScreenState extends State<SubscriptionDetailsScreen> {
                           onChanged: (bool value) {
                             commonCheckboxValue[index].value = value ?? false;
                             if (commonCheckboxValue[index].value == true) {
-                              accesControll.insert(
-                                  index, '${changeAccessControlId[index]}');
-                              accesControllName.insert(
-                                  index, '${changeAccessControlList[index]}');
-                              accesControllPrice.insert(
-                                  index, '${changeAccessControlPrice[index]}');
+                              accesControll
+                                  .add('${changeAccessControlId[index]}');
+                              accesControllName
+                                  .add('${changeAccessControlList[index]}');
+                              accesControllPrice
+                                  .add('${changeAccessControlPrice[index]}');
                             } else {
-                              accesControll.removeAt(index);
-                              accesControllName.removeAt(index);
-                              accesControllPrice.removeAt(index);
+                              accesControll
+                                  .remove('${changeAccessControlId[index]}');
+                              accesControllName
+                                  .remove('${changeAccessControlList[index]}');
+                              accesControllPrice
+                                  .remove('${changeAccessControlPrice[index]}');
                             }
 
                             if (accesControll.contains('NA') ||
