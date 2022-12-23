@@ -177,6 +177,7 @@ class _SlotDetailsScreenState extends State<SlotDetailsScreen> {
           ),
           GetBuilder<ImageController>(
             builder: (controller) {
+              log('IMAGE :- ${controller.url}');
               if (controller.loading == true) {
                 return SizedBox();
               } else {
@@ -191,29 +192,39 @@ class _SlotDetailsScreenState extends State<SlotDetailsScreen> {
                             () => SettingScreen(),
                           );
                         },
-                        child: ClipRRect(
-                          borderRadius: BorderRadius.circular(1000),
-                          child: CachedNetworkImage(
-                            height: 45,
-                            width: 45,
-                            imageUrl: '${controller.url}',
-                            fit: BoxFit.cover,
-                            errorWidget: (context, url, error) => Padding(
-                              padding: EdgeInsets.all(15.0),
-                              child: Icon(Icons.menu),
-                            ),
-                            progressIndicatorBuilder:
-                                (context, url, downloadProgress) =>
-                                    Shimmer.fromColors(
-                              baseColor: Colors.white.withOpacity(0.4),
-                              highlightColor: Colors.white.withOpacity(0.2),
-                              enabled: true,
-                              child: Container(
-                                color: Colors.white,
+                        child: controller.url == null
+                            ? Icon(Icons.add_a_photo_outlined)
+                            : ClipRRect(
+                                borderRadius: BorderRadius.circular(1000),
+                                child: CachedNetworkImage(
+                                  height: 45,
+                                  width: 45,
+                                  imageUrl: '${controller.url}',
+                                  fit: BoxFit.cover,
+                                  errorWidget: (context, url, error) => Padding(
+                                    padding: EdgeInsets.all(15.0),
+                                    child: IconButton(
+                                      onPressed: () {
+                                        Get.to(
+                                          () => SettingScreen(),
+                                        );
+                                      },
+                                      icon: Icon(Icons.menu),
+                                    ),
+                                  ),
+                                  progressIndicatorBuilder:
+                                      (context, url, downloadProgress) =>
+                                          Shimmer.fromColors(
+                                    baseColor: Colors.white.withOpacity(0.4),
+                                    highlightColor:
+                                        Colors.white.withOpacity(0.2),
+                                    enabled: true,
+                                    child: Container(
+                                      color: Colors.white,
+                                    ),
+                                  ),
+                                ),
                               ),
-                            ),
-                          ),
-                        ),
                       ),
                     ),
                   ),
