@@ -1,4 +1,4 @@
- class BaseService<T> {
+class BaseService<T> {
   final String register = 'https://i.invoiceapi.ml/api/customer/register';
   final String updateProfile = 'https://i.invoiceapi.ml/api/customer/update';
   final String logIn = 'https://i.invoiceapi.ml/api/customer/login';
@@ -17,3 +17,4 @@
 
 //29268191
 //64992808
+//

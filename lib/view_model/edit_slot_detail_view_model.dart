@@ -15,14 +15,17 @@ class EditSlotDetailViewModel extends GetxController {
     update();
   }
 
-  Future<void> editSlotDetailViewModel(
-      {Map<String, dynamic> model, String id}) async {
+  Future<void> editSlotDetailViewModel({
+    Map<String, dynamic> model,
+  }) async {
     _editSlotDetailApiResponse = ApiResponse.loading(message: 'Loading');
     update();
     try {
       updateLoading(true);
       EditSlotDetailsResponseModel response =
-          await EditSlotDetailRepo().editSlotDetailRepo(body: model, id: id);
+          await EditSlotDetailRepo().editSlotDetailRepo(
+        body: model,
+      );
       print("EditSlotDetailsResponseModel=response==>$response");
 
       _editSlotDetailApiResponse = ApiResponse.complete(response);

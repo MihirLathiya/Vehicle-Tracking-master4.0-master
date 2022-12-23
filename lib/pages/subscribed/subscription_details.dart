@@ -52,9 +52,9 @@ class _SubscriptionDetailsScreenState extends State<SubscriptionDetailsScreen> {
   RxBool isYearly = true.obs;
   RxBool isAutoRenewal = true.obs;
   RxBool isTermAgree = false.obs;
-  List accesControll = ['NA'];
-  List accesControllName = ['NA'];
-  List accesControllPrice = ['NA'];
+  List<String> accesControll = [];
+  List accesControllName = [];
+  List accesControllPrice = [];
   TextEditingController header = TextEditingController();
   TextEditingController des = TextEditingController();
 
@@ -77,6 +77,8 @@ class _SubscriptionDetailsScreenState extends State<SubscriptionDetailsScreen> {
     false.obs
   ].obs;
   List changeAccessControlList = [];
+  List changeAccessControlId = [];
+  List changeAccessControlPrice = [];
 
   // SubscriptionDetailsViewModel subscriptionDetailsViewModel =
   //     Get.put(SubscriptionDetailsViewModel());
@@ -856,6 +858,9 @@ class _SubscriptionDetailsScreenState extends State<SubscriptionDetailsScreen> {
             } else {
               changeAccessControlList
                   .add('${accessData1['data'][i]['control_name']}');
+              changeAccessControlId.add('${accessData1['data'][i]['id']}');
+              changeAccessControlPrice
+                  .add('${accessData1['data'][i]['controls_prize']}');
               print('-not contain--${accessData1['data'][i]['control_name']}');
             }
           }
@@ -891,19 +896,16 @@ class _SubscriptionDetailsScreenState extends State<SubscriptionDetailsScreen> {
                           onChanged: (bool value) {
                             commonCheckboxValue[index].value = value ?? false;
                             if (commonCheckboxValue[index].value == true) {
-                              accesControll.add(
-                                  '${accessData1['data'][index]['controls_id']}');
-                              accesControllName.add(
-                                  '${accessData1['data'][index]['control_name']}');
-                              accesControllPrice.add(
-                                  '${accessData1['data'][index]['prize']}');
+                              accesControll.insert(
+                                  index, '${changeAccessControlId[index]}');
+                              accesControllName.insert(
+                                  index, '${changeAccessControlList[index]}');
+                              accesControllPrice.insert(
+                                  index, '${changeAccessControlPrice[index]}');
                             } else {
-                              accesControll.remove(
-                                  '${accessData1['data'][index]['controls_id']}');
-                              accesControllName.remove(
-                                  '${accessData1['data'][index]['control_name']}');
-                              accesControllPrice.remove(
-                                  '${accessData1['data'][index]['prize']}');
+                              accesControll.removeAt(index);
+                              accesControllName.removeAt(index);
+                              accesControllPrice.removeAt(index);
                             }
 
                             if (accesControll.contains('NA') ||
@@ -1015,23 +1017,53 @@ class _SubscriptionDetailsScreenState extends State<SubscriptionDetailsScreen> {
                 height: 55,
                 onTap: () async {
                   log('ACCESS LIST :- ${accesControll}');
+                  log('ACCESS LIST :- ${id}');
                   if (isTermAgree.value == true) {
                     var x = 0;
                     for (int i = 0; i < accesControllPrice.length; i++) {
                       x += int.parse(accesControllPrice[i]);
                     }
-                    Get.to(
-                      () => OrderSummaryScreen(
-                        subId: id,
-                        planPrice: 'NA',
-                        slotQuntity: 1,
-                        totalAccessPrice: x,
-                        accessController: accesControll,
-                        accessPrice: accesControllPrice,
-                        access: accesControllName,
-                        renual: isAutoRenewal.value == true ? '1' : '0',
-                      ),
-                    );
+
+                    if (accesControll.isEmpty) {
+                      var headers = {
+                        'Authorization':
+                            'Bearer ${PreferenceManager.getBariear()}'
+                      };
+                      var request = http.MultipartRequest(
+                          'POST',
+                          Uri.parse(
+                              'https://i.invoiceapi.ml/api/customer/editSlotDetails'));
+                      request.fields.addAll({
+                        'id': '${id}',
+                        'auto_renewal': isAutoRenewal.value == true ? '1' : '0'
+                      });
+
+                      request.headers.addAll(headers);
+
+                      http.StreamedResponse response = await request.send();
+
+                      if (response.statusCode == 200) {
+                        print(
+                            ' SUCCESSFULL DATA :- ${await response.stream.bytesToString()}');
+                        Get.back();
+                        Get.back();
+                      } else {
+                        print(response.reasonPhrase);
+                      }
+                    } else {
+                      Get.to(
+                        () => OrderSummaryScreen(
+                          subId: id,
+                          planPrice: 'NA',
+                          slotQuntity: 1,
+                          totalAccessPrice: x,
+                          accessController: accesControll,
+                          accessPrice: accesControllPrice,
+                          access: accesControllName,
+                          renual: isAutoRenewal.value == true ? '1' : '0',
+                        ),
+                      );
+                    }
                   } else {
                     CommonSnackBar.commonSnackBar(
                         message: 'Accept Condition first');

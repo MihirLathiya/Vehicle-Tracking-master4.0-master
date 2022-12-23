@@ -431,8 +431,9 @@ class _PaymentScreenState extends State<PaymentScreen> {
     }
     var data = {'id': '${widget.subId}', 'auto_renewal': widget.renuea};
     data.addAll(controllers1);
+
+    log('ALL BODY :- $data');
     await editSlotDetailViewModel.editSlotDetailViewModel(
-      id: '${widget.subId}',
       model: data,
     );
     if (editSlotDetailViewModel.editSlotDetailApiResponse.status.toString() ==

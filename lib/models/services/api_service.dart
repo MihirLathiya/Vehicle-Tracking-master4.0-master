@@ -22,7 +22,6 @@ class APIService {
       Map<String, dynamic> body,
       // Map<String, String> header,
       bool fileUpload = false}) async {
-    log('BAREAR TOKEN :- ${PreferenceManager.getBariear()}');
     Map<String, String> header = PreferenceManager.getBariear() == null ||
             PreferenceManager.getBariear() == ''
         ? {}

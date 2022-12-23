@@ -6,7 +6,7 @@ class EditSlotDetailRepo extends BaseService {
   Future<EditSlotDetailsResponseModel> editSlotDetailRepo(
       {Map<String, dynamic> body, id}) async {
     var response = await APIService().getResponse(
-        url: 'https://i.invoiceapi.ml/api/customer/editSlotDetails?id=$id',
+        url: 'https://i.invoiceapi.ml/api/customer/editSlotDetails',
         body: body,
         apitype: APIType.aPost);
 
