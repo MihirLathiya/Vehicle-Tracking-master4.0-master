@@ -78,7 +78,7 @@ class _SlotDetailsScreenState extends State<SlotDetailsScreen> {
 
   @override
   Widget build(BuildContext context) {
-    log('ACCOUNT NO:- ${PreferenceManager.getAccountNo()}');
+    log('ACCOUNT NO:- ${PreferenceManager.getBariear()}');
     return Scaffold(
       body: Stack(
         // alignment: AlignmentDirectional.bottomCenter,
@@ -121,15 +121,97 @@ class _SlotDetailsScreenState extends State<SlotDetailsScreen> {
                                   SizedBox(
                                     height: 10,
                                   ),
-                                  ClipRRect(
-                                    borderRadius: BorderRadius.circular(10),
-                                    child: Image.network(
-                                      '${response.data.image}',
-                                      width: Get.width,
-                                      height: 220,
-                                      fit: BoxFit.fitWidth,
-                                      // height: Get.height,
-                                    ),
+                                  Stack(
+                                    children: [
+                                      ClipRRect(
+                                        borderRadius: BorderRadius.circular(10),
+                                        child: Image.network(
+                                          '${response.data.image}',
+                                          width: Get.width,
+                                          height: 220,
+                                          fit: BoxFit.fitWidth,
+                                          // height: Get.height,
+                                        ),
+                                      ),
+                                      GetBuilder<ImageController>(
+                                        builder: (controller) {
+                                          log('IMAGE :- ${controller.url}');
+                                          if (controller.loading == true) {
+                                            return SizedBox();
+                                          } else {
+                                            return Align(
+                                              alignment: Alignment.topRight,
+                                              child: Padding(
+                                                padding: EdgeInsets.symmetric(
+                                                    horizontal: 15,
+                                                    vertical: 15),
+                                                child: GestureDetector(
+                                                  onTap: () {
+                                                    Get.to(
+                                                      () => SettingScreen(),
+                                                    );
+                                                  },
+                                                  child: controller.url == null
+                                                      ? CircleAvatar(
+                                                          backgroundColor:
+                                                              Colors.white,
+                                                          radius: 20,
+                                                          child: Icon(
+                                                            Icons.person,
+                                                            color: Colors.black,
+                                                          ),
+                                                        )
+                                                      : CircleAvatar(
+                                                          radius: 25,
+                                                          backgroundColor:
+                                                              Colors.white,
+                                                          child: ClipRRect(
+                                                            borderRadius:
+                                                                BorderRadius
+                                                                    .circular(
+                                                                        1000),
+                                                            child:
+                                                                Image.network(
+                                                              '${controller.url}',
+                                                              height: 45,
+                                                              width: 45,
+                                                              fit: BoxFit.cover,
+                                                              errorBuilder:
+                                                                  (context,
+                                                                      error,
+                                                                      stackTrace) {
+                                                                return GestureDetector(
+                                                                  onTap: () {
+                                                                    Get.to(
+                                                                      () =>
+                                                                          SettingScreen(),
+                                                                    );
+                                                                  },
+                                                                  child:
+                                                                      CircleAvatar(
+                                                                    backgroundColor:
+                                                                        Colors
+                                                                            .white,
+                                                                    radius: 20,
+                                                                    child: Icon(
+                                                                      Icons
+                                                                          .person,
+                                                                      color: Colors
+                                                                          .black,
+                                                                    ),
+                                                                  ),
+                                                                );
+                                                              },
+                                                            ),
+                                                          ),
+                                                        ),
+                                                ),
+                                              ),
+                                            );
+                                          }
+                                        },
+                                      )
+                                    ],
                                   ),
                                   height15,
                                   welcomeWidget(),
@@ -151,7 +233,10 @@ class _SlotDetailsScreenState extends State<SlotDetailsScreen> {
                                           : '${response.data.fourWheeler}'),
                                   height15,
                                   monthlySubscriptionWidget(
-                                      response.data.subscription == 0
+                                      PreferenceManager.getPlaceId() == null ||
+                                              PreferenceManager.getPlaceId() ==
+                                                  '' ||
+                                              response.data.subscription == 0
                                           ? 'Not Subscribed yet'
                                           : '${response.data.subscription}'),
                                   height15,
@@ -175,69 +260,6 @@ class _SlotDetailsScreenState extends State<SlotDetailsScreen> {
               ),
             ),
           ),
-          GetBuilder<ImageController>(
-            builder: (controller) {
-              log('IMAGE :- ${controller.url}');
-              if (controller.loading == true) {
-                return SizedBox();
-              } else {
-                return SafeArea(
-                  child: Align(
-                    alignment: Alignment.topRight,
-                    child: Padding(
-                      padding: const EdgeInsets.all(25),
-                      child: GestureDetector(
-                        onTap: () {
-                          Get.to(
-                            () => SettingScreen(),
-                          );
-                        },
-                        child: controller.url == null
-                            ? CircleAvatar(
-                                backgroundColor: Colors.white,
-                                radius: 20,
-                                child: Icon(
-                                  Icons.person,
-                                  color: Colors.black,
-                                ),
-                              )
-                            : CircleAvatar(
-                                radius: 25,
-                                backgroundColor: Colors.white,
-                                child: ClipRRect(
-                                  borderRadius: BorderRadius.circular(1000),
-                                  child: Image.network(
-                                    '${controller.url}',
-                                    height: 45,
-                                    width: 45,
-                                    fit: BoxFit.cover,
-                                    errorBuilder: (context, error, stackTrace) {
-                                      return GestureDetector(
-                                        onTap: () {
-                                          Get.to(
-                                            () => SettingScreen(),
-                                          );
-                                        },
-                                        child: CircleAvatar(
-                                          backgroundColor: Colors.white,
-                                          radius: 20,
-                                          child: Icon(
-                                            Icons.person,
-                                            color: Colors.black,
-                                          ),
-                                        ),
-                                      );
-                                    },
-                                  ),
-                                ),
-                              ),
-                      ),
-                    ),
-                  ),
-                );
-              }
-            },
-          )
         ],
       ),
       bottomNavigationBar: button(),
