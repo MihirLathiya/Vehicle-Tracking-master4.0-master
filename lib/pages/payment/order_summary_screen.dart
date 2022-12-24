@@ -134,7 +134,9 @@ class _OrderSummaryScreenState extends State<OrderSummaryScreen> {
   @override
   void initState() {
     controllers = widget.accessController;
-    if (widget.renual != null && widget.planSubId != null) {
+    if (widget.renual != null &&
+        widget.planSubId != null &&
+        widget.subId != null) {
       getAccessControlePayAmount();
     } else {
       getAccountPayAmmount();
