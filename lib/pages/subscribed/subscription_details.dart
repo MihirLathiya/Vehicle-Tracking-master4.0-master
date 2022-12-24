@@ -929,7 +929,7 @@ class _SubscriptionDetailsScreenState extends State<SubscriptionDetailsScreen> {
           );
         }
         return Center(
-          child: Text('Someething wrong'),
+          child: Text('Something wrong'),
         );
       },
     );
@@ -960,7 +960,7 @@ class _SubscriptionDetailsScreenState extends State<SubscriptionDetailsScreen> {
                 ),
                 height10,
                 Text(
-                  'Complaint/Suggestions about this parking. Report a lost/damage/manifactioning of this access control.',
+                  'Complaint/Suggestions about this parking. Report a lost/damage/malfunctioning of this access control.',
                   style:
                       AppTextStyle.normalRegular16.copyWith(color: greyColor),
                 ),
