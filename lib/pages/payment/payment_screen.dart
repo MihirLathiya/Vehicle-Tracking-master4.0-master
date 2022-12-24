@@ -479,7 +479,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
         'vehicle_number': '${widget.vehicleNumber}'
       };
       bodyy11.addAll(selected1);
-      log('BODTYS :- $bodyy11');
+      log('BODTYS ADD :- $bodyy11');
       var request = await http.post(
           Uri.parse('https://i.invoiceapi.ml/api/customer/addSlot'),
           body: bodyy11,

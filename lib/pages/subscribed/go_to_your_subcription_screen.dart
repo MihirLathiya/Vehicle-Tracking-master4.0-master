@@ -33,6 +33,7 @@ class _GotoYourSubscriptionScreenState
   RxBool isAutoRenewal = true.obs;
   bool isLoading = false;
   dynamic accessx;
+  bool Loading = false;
 
   TextEditingController remove = TextEditingController();
   List<String> items = ["Camera", "Phone", "Image", "Video"];
@@ -80,6 +81,7 @@ class _GotoYourSubscriptionScreenState
   }
 
   dynamic slotNames;
+  dynamic slotNamesValue;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -123,8 +125,6 @@ class _GotoYourSubscriptionScreenState
                             height15,
                             subscriptionDetailsWidget(),
                             height15,
-                            if ((data['data'] as List).length > 0)
-                              bottomButtons(),
                             if ((data['data'] as List).length == 0)
                               Text('Buy Subscription first'),
                             height15,
@@ -164,209 +164,219 @@ class _GotoYourSubscriptionScreenState
       physics: BouncingScrollPhysics(),
       itemCount: (data['data'] as List).length,
       itemBuilder: (context, index) {
-        return Container(
-          margin: EdgeInsets.only(bottom: 15),
-          width: Get.width,
-          decoration: BoxDecoration(
-            color: whiteColor,
-            border: Border.all(
-              color: borderGreyColor,
+        return Column(
+          children: [
+            Container(
+              margin: EdgeInsets.only(bottom: 15),
+              width: Get.width,
+              decoration: BoxDecoration(
+                color: whiteColor,
+                border: Border.all(
+                  color: borderGreyColor,
+                ),
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: Column(
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 10.0),
+                    child: Column(
+                      children: [
+                        height10,
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            SizedBox(
+                              width: Get.width / 3,
+                              child: Text(
+                                'Contract Date',
+                                style: AppTextStyle.normalSemiBold16.copyWith(
+                                  color: greyColor,
+                                ),
+                              ),
+                            ),
+                            SizedBox(
+                              width: Get.width / 3,
+                              child: TextField(
+                                enabled: false,
+                                style: AppTextStyle.normalRegular14,
+                                controller: TextEditingController(
+                                    text:
+                                        '${data['data'][index]['strt_date'].toString().split(' ').first}'),
+                                textAlign: TextAlign.center,
+                                decoration: const InputDecoration(
+                                  isDense: true,
+                                  contentPadding: EdgeInsets.zero,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                        height25,
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            SizedBox(
+                              width: Get.width / 3,
+                              child: Text(
+                                'Amount',
+                                style: AppTextStyle.normalSemiBold16.copyWith(
+                                  color: greyColor,
+                                ),
+                              ),
+                            ),
+                            SizedBox(
+                              width: Get.width / 3,
+                              child: TextField(
+                                enabled: false,
+                                style: AppTextStyle.normalRegular14,
+                                controller: TextEditingController(
+                                    text:
+                                        '${data['data'][index]['subscription_amount']}/-'),
+                                textAlign: TextAlign.center,
+                                decoration: const InputDecoration(
+                                  isDense: true,
+                                  contentPadding: EdgeInsets.zero,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                        height25,
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            SizedBox(
+                              width: Get.width / 3,
+                              child: Text(
+                                'Parking Number',
+                                style: AppTextStyle.normalSemiBold16.copyWith(
+                                  color: greyColor,
+                                ),
+                              ),
+                            ),
+                            SizedBox(
+                              width: Get.width / 3,
+                              child: TextField(
+                                enabled: false,
+                                style: AppTextStyle.normalRegular14,
+                                controller:
+                                    TextEditingController(text: 'B1-02'),
+                                textAlign: TextAlign.center,
+                                decoration: const InputDecoration(
+                                  isDense: true,
+                                  contentPadding: EdgeInsets.zero,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                        height25,
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            SizedBox(
+                              width: Get.width / 3,
+                              child: Text(
+                                'Slot Quantity',
+                                style: AppTextStyle.normalSemiBold16.copyWith(
+                                  color: greyColor,
+                                ),
+                              ),
+                            ),
+                            SizedBox(
+                              width: Get.width / 3,
+                              child: TextField(
+                                enabled: false,
+                                style: AppTextStyle.normalRegular14,
+                                controller: TextEditingController(
+                                    text:
+                                        '${data['data'][index]['slot_quantity']}'),
+                                textAlign: TextAlign.center,
+                                decoration: const InputDecoration(
+                                  isDense: true,
+                                  contentPadding: EdgeInsets.zero,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                        height25,
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            SizedBox(
+                              width: Get.width / 3,
+                              child: Text(
+                                'Location',
+                                style: AppTextStyle.normalSemiBold16.copyWith(
+                                  color: greyColor,
+                                ),
+                              ),
+                            ),
+                            SizedBox(
+                              width: Get.width / 3,
+                              child: TextField(
+                                enabled: false,
+                                style: AppTextStyle.normalRegular14,
+                                controller: TextEditingController(
+                                    text:
+                                        '${data['data'][index]['parking_location']}'),
+                                textAlign: TextAlign.center,
+                                decoration: const InputDecoration(
+                                  isDense: true,
+                                  contentPadding: EdgeInsets.zero,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                        height25,
+                        slotAddOrRemoveButtons(
+                            data['data'][index]['id'], index),
+                        height10,
+                      ],
+                    ),
+                  ),
+                  GestureDetector(
+                    onTap: () async {
+                      log('DATA ID :- ${data['data'][index]['id']}');
+                      PreferenceManager.setPlaceId(
+                          data['data'][index]['place_id'].toString());
+                      await getAccessData(
+                          data['data'][index]['place_id'].toString());
+                      Get.to(() => SubscriptionDetailsScreen(
+                          accessx: accessx,
+                          id: data['data'][index]['id'].toString(),
+                          placeId: data['data'][index]['place_id'].toString()));
+                    },
+                    child: Container(
+                      height: 50,
+                      width: Get.width,
+                      alignment: Alignment.center,
+                      decoration: const BoxDecoration(
+                        color: blackColor,
+                        borderRadius: BorderRadius.only(
+                          bottomLeft: Radius.circular(10),
+                          bottomRight: Radius.circular(10),
+                        ),
+                      ),
+                      child: Text(
+                        'View Details',
+                        style: AppTextStyle.normalRegular16.copyWith(
+                          color: whiteColor,
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
             ),
-            borderRadius: BorderRadius.circular(10),
-          ),
-          child: Column(
-            children: [
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 10.0),
-                child: Column(
-                  children: [
-                    height10,
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        SizedBox(
-                          width: Get.width / 3,
-                          child: Text(
-                            'Contract Date',
-                            style: AppTextStyle.normalSemiBold16.copyWith(
-                              color: greyColor,
-                            ),
-                          ),
-                        ),
-                        SizedBox(
-                          width: Get.width / 3,
-                          child: TextField(
-                            enabled: false,
-                            style: AppTextStyle.normalRegular14,
-                            controller: TextEditingController(
-                                text:
-                                    '${data['data'][index]['strt_date'].toString().split(' ').first}'),
-                            textAlign: TextAlign.center,
-                            decoration: const InputDecoration(
-                              isDense: true,
-                              contentPadding: EdgeInsets.zero,
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                    height25,
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        SizedBox(
-                          width: Get.width / 3,
-                          child: Text(
-                            'Amount',
-                            style: AppTextStyle.normalSemiBold16.copyWith(
-                              color: greyColor,
-                            ),
-                          ),
-                        ),
-                        SizedBox(
-                          width: Get.width / 3,
-                          child: TextField(
-                            enabled: false,
-                            style: AppTextStyle.normalRegular14,
-                            controller: TextEditingController(
-                                text:
-                                    '${data['data'][index]['subscription_amount']}/-'),
-                            textAlign: TextAlign.center,
-                            decoration: const InputDecoration(
-                              isDense: true,
-                              contentPadding: EdgeInsets.zero,
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                    height25,
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        SizedBox(
-                          width: Get.width / 3,
-                          child: Text(
-                            'Parking Number',
-                            style: AppTextStyle.normalSemiBold16.copyWith(
-                              color: greyColor,
-                            ),
-                          ),
-                        ),
-                        SizedBox(
-                          width: Get.width / 3,
-                          child: TextField(
-                            enabled: false,
-                            style: AppTextStyle.normalRegular14,
-                            controller: TextEditingController(text: 'B1-02'),
-                            textAlign: TextAlign.center,
-                            decoration: const InputDecoration(
-                              isDense: true,
-                              contentPadding: EdgeInsets.zero,
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                    height25,
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        SizedBox(
-                          width: Get.width / 3,
-                          child: Text(
-                            'Slot Quantity',
-                            style: AppTextStyle.normalSemiBold16.copyWith(
-                              color: greyColor,
-                            ),
-                          ),
-                        ),
-                        SizedBox(
-                          width: Get.width / 3,
-                          child: TextField(
-                            enabled: false,
-                            style: AppTextStyle.normalRegular14,
-                            controller: TextEditingController(
-                                text:
-                                    '${data['data'][index]['slot_quantity']}'),
-                            textAlign: TextAlign.center,
-                            decoration: const InputDecoration(
-                              isDense: true,
-                              contentPadding: EdgeInsets.zero,
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                    height25,
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        SizedBox(
-                          width: Get.width / 3,
-                          child: Text(
-                            'Location',
-                            style: AppTextStyle.normalSemiBold16.copyWith(
-                              color: greyColor,
-                            ),
-                          ),
-                        ),
-                        SizedBox(
-                          width: Get.width / 3,
-                          child: TextField(
-                            enabled: false,
-                            style: AppTextStyle.normalRegular14,
-                            controller: TextEditingController(
-                                text:
-                                    '${data['data'][index]['parking_location']}'),
-                            textAlign: TextAlign.center,
-                            decoration: const InputDecoration(
-                              isDense: true,
-                              contentPadding: EdgeInsets.zero,
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                    height25,
-                    slotAddOrRemoveButtons(data['data'][index]['id'], index),
-                    height10,
-                  ],
-                ),
-              ),
-              GestureDetector(
-                onTap: () async {
-                  log('DATA ID :- ${data['data'][index]['id']}');
-                  PreferenceManager.setPlaceId(
-                      data['data'][index]['place_id'].toString());
-                  await getAccessData(
-                      data['data'][index]['place_id'].toString());
-                  Get.to(() => SubscriptionDetailsScreen(
-                      accessx: accessx,
-                      id: data['data'][index]['id'].toString(),
-                      placeId: data['data'][index]['place_id'].toString()));
-                },
-                child: Container(
-                  height: 50,
-                  width: Get.width,
-                  alignment: Alignment.center,
-                  decoration: const BoxDecoration(
-                    color: blackColor,
-                    borderRadius: BorderRadius.only(
-                      bottomLeft: Radius.circular(10),
-                      bottomRight: Radius.circular(10),
-                    ),
-                  ),
-                  child: Text(
-                    'View Details',
-                    style: AppTextStyle.normalRegular16.copyWith(
-                      color: whiteColor,
-                    ),
-                  ),
-                ),
-              ),
-            ],
-          ),
+            bottomButtons(index, data['data'][index]['id']),
+            SizedBox(
+              height: 20,
+            )
+          ],
         );
       },
     );
@@ -478,7 +488,7 @@ class _GotoYourSubscriptionScreenState
     );
   }
 
-  Widget bottomButtons() {
+  Widget bottomButtons(index, slotId) {
     return Row(
       children: [
         Expanded(
@@ -487,7 +497,9 @@ class _GotoYourSubscriptionScreenState
             radius: 15,
             height: 50,
             onTap: () {
-              renewalPopup(0, '', '');
+              getSubDetails1(data['data'][index]['id']);
+              renewalPopupRenew(slotId.toString());
+              setState(() {});
             },
           ),
         ),
@@ -912,220 +924,462 @@ class _GotoYourSubscriptionScreenState
   void renewalPopup1(slotId) {
     showDialog(
       context: context,
-      barrierDismissible: false,
       builder: (context) {
         return StatefulBuilder(
           builder: (context, state) {
             Future.delayed(Duration.zero, () {
               state(() {});
             });
-            return Dialog(
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(10),
-              ),
-              elevation: 16,
-              insetPadding:
-                  const EdgeInsets.symmetric(horizontal: 20, vertical: 60),
-              child: ListView(
-                shrinkWrap: true,
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 25, vertical: 25),
-                children: <Widget>[
-                  DropdownButtonHideUnderline(
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 10),
-                      child: DropdownButtonFormField(
-                        decoration: InputDecoration(
-                          label: Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 10),
-                            child: Text(
-                              'Slot*',
-                              style: AppTextStyle.normalRegular14
-                                  .copyWith(color: greyColor, fontSize: 16),
-                            ),
-                          ),
-                          suffixIcon: const Padding(
-                            padding: EdgeInsets.all(10.0),
-                            child: Icon(
-                              Icons.keyboard_arrow_down_outlined,
-                              color: blackColor,
-                            ),
-                          ),
-                          border: const OutlineInputBorder(
-                            borderRadius: BorderRadius.all(
-                              Radius.circular(15.0),
-                            ),
-                          ),
-                        ),
-                        iconSize: 0.0,
-                        hint: slotNames == null
-                            ? Padding(
-                                padding: const EdgeInsets.symmetric(
-                                    horizontal: 10.0),
-                                child: Text('Slot',
-                                    style: AppTextStyle.normalRegular14
-                                        .copyWith(color: greyColor)),
-                              )
-                            : Text(
-                                slotNames
-                                    .toString()
-                                    .split('..')
-                                    .first
-                                    .toString(),
-                                style: const TextStyle(color: blackColor),
-                              ),
-                        isExpanded: true,
-                        borderRadius: BorderRadius.circular(30),
-                        style: const TextStyle(color: blackColor),
-                        items: slotName.map(
-                          (val) {
-                            return DropdownMenuItem<String>(
-                              value: val,
-                              child: Padding(
-                                padding:
-                                    const EdgeInsets.symmetric(horizontal: 10),
-                                child:
-                                    Text('${val.toString().split('..').first}'),
-                              ),
-                            );
-                          },
-                        ).toList(),
-                        onChanged: (val) {
-                          setState(
-                            () {
-                              slotNames = val.toString();
-                            },
-                          );
-                          print(
-                              'SlotNAMES VALUE :- ${slotNames.toString().split('..').last}');
-                        },
-                      ),
+            return Loading == true
+                ? Dialog(
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10),
                     ),
-                  ),
-                  height10,
-                  Row(
-                    children: [
-                      GestureDetector(
-                        onTap: () {
-                          isTermAgree.value = !isTermAgree.value;
-                        },
-                        child: Obx(
-                          () => isTermAgree.value
-                              ? Container(
-                                  height: 20,
-                                  width: 20,
-                                  alignment: Alignment.center,
-                                  decoration: BoxDecoration(
-                                    color: appColor,
-                                    borderRadius: BorderRadius.circular(5),
-                                    border: Border.all(color: appColor),
-                                  ),
-                                  child: const Icon(
-                                    Icons.check_rounded,
-                                    color: whiteColor,
-                                    size: 18,
-                                  ),
-                                )
-                              : Container(
-                                  height: 20,
-                                  width: 20,
-                                  decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(5),
-                                    border: Border.all(color: appColor),
+                    elevation: 16,
+                    insetPadding: const EdgeInsets.symmetric(
+                        horizontal: 20, vertical: 60),
+                    child: ListView(
+                      shrinkWrap: true,
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 25, vertical: 25),
+                      children: <Widget>[
+                        DropdownButtonHideUnderline(
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 10),
+                            child: DropdownButtonFormField(
+                              decoration: InputDecoration(
+                                label: Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 10),
+                                  child: Text(
+                                    'Slot*',
+                                    style: AppTextStyle.normalRegular14
+                                        .copyWith(
+                                            color: greyColor, fontSize: 16),
                                   ),
                                 ),
-                        ),
-                      ),
-                      const SizedBox(
-                        width: 10,
-                      ),
-                      Expanded(
-                        child: RichText(
-                          maxLines: 2,
-                          text: TextSpan(
-                            children: [
-                              TextSpan(
-                                text: 'I Agree to the ',
-                                style: AppTextStyle.normalRegular16.copyWith(
-                                  color: greyColor,
+                                suffixIcon: const Padding(
+                                  padding: EdgeInsets.all(10.0),
+                                  child: Icon(
+                                    Icons.keyboard_arrow_down_outlined,
+                                    color: blackColor,
+                                  ),
+                                ),
+                                border: const OutlineInputBorder(
+                                  borderRadius: BorderRadius.all(
+                                    Radius.circular(15.0),
+                                  ),
                                 ),
                               ),
-                              TextSpan(
-                                text: 'Terms & Conditions',
-                                style: AppTextStyle.normalRegular16.copyWith(
-                                  color: appColor,
-                                  decoration: TextDecoration.underline,
-                                ),
-                                recognizer: TapGestureRecognizer()
-                                  ..onTap = () {},
-                              ),
-                            ],
+                              iconSize: 0.0,
+                              hint: slotNames == null
+                                  ? Padding(
+                                      padding: const EdgeInsets.symmetric(
+                                          horizontal: 10.0),
+                                      child: Text('Slot',
+                                          style: AppTextStyle.normalRegular14
+                                              .copyWith(color: greyColor)),
+                                    )
+                                  : Text(
+                                      slotNames
+                                          .toString()
+                                          .split('..')
+                                          .first
+                                          .toString(),
+                                      style: const TextStyle(color: blackColor),
+                                    ),
+                              isExpanded: true,
+                              borderRadius: BorderRadius.circular(30),
+                              style: const TextStyle(color: blackColor),
+                              items: slotName.map(
+                                (val) {
+                                  return DropdownMenuItem<String>(
+                                    value: val,
+                                    child: Padding(
+                                      padding: const EdgeInsets.symmetric(
+                                          horizontal: 10),
+                                      child: Text(
+                                          '${val.toString().split('..').first}'),
+                                    ),
+                                  );
+                                },
+                              ).toList(),
+                              onChanged: (val) {
+                                setState(
+                                  () {
+                                    slotNames = val.toString();
+                                    slotNamesValue = val.toString();
+                                  },
+                                );
+                                print('SlotNAMES VALUE :- ${slotNamesValue}');
+                              },
+                            ),
                           ),
                         ),
-                      ),
-                    ],
-                  ),
-                  height20,
-                  Row(
-                    children: [
-                      Expanded(
-                        child: AppBorderButton(
-                          title: 'Cancel',
-                          height: 45,
-                          radius: 10,
-                          onTap: () {
-                            Get.back();
-                          },
+                        height10,
+                        Row(
+                          children: [
+                            GestureDetector(
+                              onTap: () {
+                                isTermAgree.value = !isTermAgree.value;
+                              },
+                              child: Obx(
+                                () => isTermAgree.value
+                                    ? Container(
+                                        height: 20,
+                                        width: 20,
+                                        alignment: Alignment.center,
+                                        decoration: BoxDecoration(
+                                          color: appColor,
+                                          borderRadius:
+                                              BorderRadius.circular(5),
+                                          border: Border.all(color: appColor),
+                                        ),
+                                        child: const Icon(
+                                          Icons.check_rounded,
+                                          color: whiteColor,
+                                          size: 18,
+                                        ),
+                                      )
+                                    : Container(
+                                        height: 20,
+                                        width: 20,
+                                        decoration: BoxDecoration(
+                                          borderRadius:
+                                              BorderRadius.circular(5),
+                                          border: Border.all(color: appColor),
+                                        ),
+                                      ),
+                              ),
+                            ),
+                            const SizedBox(
+                              width: 10,
+                            ),
+                            Expanded(
+                              child: RichText(
+                                maxLines: 2,
+                                text: TextSpan(
+                                  children: [
+                                    TextSpan(
+                                      text: 'I Agree to the ',
+                                      style:
+                                          AppTextStyle.normalRegular16.copyWith(
+                                        color: greyColor,
+                                      ),
+                                    ),
+                                    TextSpan(
+                                      text: 'Terms & Conditions',
+                                      style:
+                                          AppTextStyle.normalRegular16.copyWith(
+                                        color: appColor,
+                                        decoration: TextDecoration.underline,
+                                      ),
+                                      recognizer: TapGestureRecognizer()
+                                        ..onTap = () {},
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ],
                         ),
-                      ),
-                      width15,
-                      Expanded(
-                        child: AppFillButton(
-                          title: 'Proceed',
-                          radius: 10,
-                          height: 45,
-                          onTap: () async {
-                            if (isTermAgree.value == true) {
-                              var headers = {
-                                'Authorization':
-                                    'Bearer ${PreferenceManager.getBariear()}'
-                              };
-                              var request = http.MultipartRequest(
-                                  'POST',
-                                  Uri.parse(
-                                      'https://i.invoiceapi.ml/api/customer/removeSlot'));
-                              request.fields.addAll({
-                                'slot_id':
-                                    '${slotNames.toString().split('..').last}'
-                              });
+                        height20,
+                        Row(
+                          children: [
+                            Expanded(
+                              child: AppBorderButton(
+                                title: 'Cancel',
+                                height: 45,
+                                radius: 10,
+                                onTap: () {
+                                  Get.back();
+                                },
+                              ),
+                            ),
+                            width15,
+                            Expanded(
+                              child: AppFillButton(
+                                title: 'Proceed',
+                                radius: 10,
+                                height: 45,
+                                onTap: () async {
+                                  if (isTermAgree.value == true) {
+                                    var headers = {
+                                      'Authorization':
+                                          'Bearer ${PreferenceManager.getBariear()}'
+                                    };
+                                    var request = http.MultipartRequest(
+                                        'POST',
+                                        Uri.parse(
+                                            'https://i.invoiceapi.ml/api/customer/removeSlot'));
+                                    request.fields.addAll(
+                                        {'slot_id': '${slotNamesValue}'});
 
-                              request.headers.addAll(headers);
+                                    request.headers.addAll(headers);
 
-                              http.StreamedResponse response =
-                                  await request.send();
+                                    http.StreamedResponse response =
+                                        await request.send();
 
-                              if (response.statusCode == 200) {
-                                Get.back();
-                                remove.clear();
-                                print(await response.stream.bytesToString());
-                                CommonSnackBar.commonSnackBar(
-                                    message: 'slot remove Request send');
-                              } else {
-                                print(response.reasonPhrase);
-                              }
-                            } else {
-                              CommonSnackBar.commonSnackBar(
-                                  message: 'Accept Condition first');
-                            }
-                          },
+                                    if (response.statusCode == 200) {
+                                      Get.back();
+                                      remove.clear();
+                                      print(await response.stream
+                                          .bytesToString());
+                                      CommonSnackBar.commonSnackBar(
+                                          message: 'slot remove Request send');
+                                    } else {
+                                      print(response.reasonPhrase);
+                                    }
+                                  } else {
+                                    CommonSnackBar.commonSnackBar(
+                                        message: 'Accept Condition first');
+                                  }
+                                },
+                              ),
+                            ),
+                          ],
                         ),
-                      ),
-                    ],
-                  ),
-                  height10,
-                ],
-              ),
-            );
+                        height10,
+                      ],
+                    ),
+                  )
+                : Center(
+                    child: CircularProgressIndicator(),
+                  );
+          },
+        );
+      },
+    );
+  }
+
+  void renewalPopupRenew(slotId) {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return StatefulBuilder(
+          builder: (context, state) {
+            Future.delayed(Duration.zero, () {
+              state(() {});
+            });
+            return Loading == true
+                ? Dialog(
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    elevation: 16,
+                    insetPadding: const EdgeInsets.symmetric(
+                        horizontal: 20, vertical: 60),
+                    child: ListView(
+                      shrinkWrap: true,
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 25, vertical: 25),
+                      children: <Widget>[
+                        DropdownButtonHideUnderline(
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 10),
+                            child: DropdownButtonFormField(
+                              decoration: InputDecoration(
+                                label: Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 10),
+                                  child: Text(
+                                    'Slot*',
+                                    style: AppTextStyle.normalRegular14
+                                        .copyWith(
+                                            color: greyColor, fontSize: 16),
+                                  ),
+                                ),
+                                suffixIcon: const Padding(
+                                  padding: EdgeInsets.all(10.0),
+                                  child: Icon(
+                                    Icons.keyboard_arrow_down_outlined,
+                                    color: blackColor,
+                                  ),
+                                ),
+                                border: const OutlineInputBorder(
+                                  borderRadius: BorderRadius.all(
+                                    Radius.circular(15.0),
+                                  ),
+                                ),
+                              ),
+                              iconSize: 0.0,
+                              hint: slotNames == null
+                                  ? Padding(
+                                      padding: const EdgeInsets.symmetric(
+                                          horizontal: 10.0),
+                                      child: Text('Slot',
+                                          style: AppTextStyle.normalRegular14
+                                              .copyWith(color: greyColor)),
+                                    )
+                                  : Text(
+                                      slotNames
+                                          .toString()
+                                          .split('..')
+                                          .first
+                                          .toString(),
+                                      style: const TextStyle(color: blackColor),
+                                    ),
+                              isExpanded: true,
+                              borderRadius: BorderRadius.circular(30),
+                              style: const TextStyle(color: blackColor),
+                              items: slotName.map(
+                                (val) {
+                                  return DropdownMenuItem<String>(
+                                    value: val,
+                                    child: Padding(
+                                      padding: const EdgeInsets.symmetric(
+                                          horizontal: 10),
+                                      child: Text(
+                                          '${val.toString().split('..').first}'),
+                                    ),
+                                  );
+                                },
+                              ).toList(),
+                              onChanged: (val) {
+                                setState(
+                                  () {
+                                    slotNames = val.toString();
+                                    slotNamesValue = val.toString();
+                                  },
+                                );
+                                print(
+                                    'SlotNAMES VALUE :- ${slotNames.toString().split('..').last}');
+                              },
+                            ),
+                          ),
+                        ),
+                        height10,
+                        Row(
+                          children: [
+                            GestureDetector(
+                              onTap: () {
+                                isTermAgree.value = !isTermAgree.value;
+                              },
+                              child: Obx(
+                                () => isTermAgree.value
+                                    ? Container(
+                                        height: 20,
+                                        width: 20,
+                                        alignment: Alignment.center,
+                                        decoration: BoxDecoration(
+                                          color: appColor,
+                                          borderRadius:
+                                              BorderRadius.circular(5),
+                                          border: Border.all(color: appColor),
+                                        ),
+                                        child: const Icon(
+                                          Icons.check_rounded,
+                                          color: whiteColor,
+                                          size: 18,
+                                        ),
+                                      )
+                                    : Container(
+                                        height: 20,
+                                        width: 20,
+                                        decoration: BoxDecoration(
+                                          borderRadius:
+                                              BorderRadius.circular(5),
+                                          border: Border.all(color: appColor),
+                                        ),
+                                      ),
+                              ),
+                            ),
+                            const SizedBox(
+                              width: 10,
+                            ),
+                            Expanded(
+                              child: RichText(
+                                maxLines: 2,
+                                text: TextSpan(
+                                  children: [
+                                    TextSpan(
+                                      text: 'I Agree to the ',
+                                      style:
+                                          AppTextStyle.normalRegular16.copyWith(
+                                        color: greyColor,
+                                      ),
+                                    ),
+                                    TextSpan(
+                                      text: 'Terms & Conditions',
+                                      style:
+                                          AppTextStyle.normalRegular16.copyWith(
+                                        color: appColor,
+                                        decoration: TextDecoration.underline,
+                                      ),
+                                      recognizer: TapGestureRecognizer()
+                                        ..onTap = () {},
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                        height20,
+                        Row(
+                          children: [
+                            Expanded(
+                              child: AppBorderButton(
+                                title: 'Cancel',
+                                height: 45,
+                                radius: 10,
+                                onTap: () {
+                                  Get.back();
+                                },
+                              ),
+                            ),
+                            width15,
+                            Expanded(
+                              child: AppFillButton(
+                                title: 'Proceed',
+                                radius: 10,
+                                height: 45,
+                                onTap: () async {
+                                  if (isTermAgree.value == true) {
+                                    var headers = {
+                                      'Authorization':
+                                          'Bearer ${PreferenceManager.getBariear()}'
+                                    };
+                                    var request = http.MultipartRequest(
+                                        'POST',
+                                        Uri.parse(
+                                            'https://i.invoiceapi.ml/api/customer/editSlotDetails'));
+                                    request.fields.addAll({
+                                      'id': '${slotNamesValue}',
+                                      'auto_renewal': '1'
+                                    });
+
+                                    request.headers.addAll(headers);
+
+                                    http.StreamedResponse response =
+                                        await request.send();
+
+                                    if (response.statusCode == 200) {
+                                      print(await response.stream
+                                          .bytesToString());
+                                      Get.back();
+                                      CommonSnackBar.commonSnackBar(
+                                          message: 'Updated');
+                                    } else {
+                                      print(response.reasonPhrase);
+                                      Get.back();
+                                    }
+                                  } else {
+                                    CommonSnackBar.commonSnackBar(
+                                        message: 'Accept Condition first');
+                                  }
+                                },
+                              ),
+                            ),
+                          ],
+                        ),
+                        height10,
+                      ],
+                    ),
+                  )
+                : Center(
+                    child: CircularProgressIndicator(),
+                  );
           },
         );
       },
@@ -1133,6 +1387,9 @@ class _GotoYourSubscriptionScreenState
   }
 
   getSubDetails1(id) async {
+    setState(() {
+      Loading = false;
+    });
     var headers = {'Authorization': 'Bearer ${PreferenceManager.getBariear()}'};
     var request = await http.get(
         Uri.parse(
@@ -1148,10 +1405,17 @@ class _GotoYourSubscriptionScreenState
             i, '${data['data'][i]['parking_name']}..${data['data'][i]['id']}');
       }
       slotNames = slotName[0].toString().split('..').first;
+      slotNamesValue = slotName[0].toString().split('..').last;
 
+      setState(() {
+        Loading = true;
+      });
       log('HELLO $slotName');
       setState(() {});
     } else {
+      setState(() {
+        Loading = false;
+      });
       print(request.reasonPhrase);
     }
   }

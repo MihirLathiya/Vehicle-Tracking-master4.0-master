@@ -458,14 +458,14 @@ class _OrderSummaryScreenState extends State<OrderSummaryScreen> {
       child: Row(
         children: [
           Text(
-            'Gold Membership',
+            'Membership',
             style: AppTextStyle.normalRegular14.copyWith(color: whiteColor),
           ),
           const Spacer(),
-          Text(
-            '${widget.planPrice}/-',
-            style: AppTextStyle.bold16.copyWith(color: whiteColor),
-          ),
+          // Text(
+          //   '${widget.planPrice}/-',
+          //   style: AppTextStyle.bold16.copyWith(color: whiteColor),
+          // ),
         ],
       ),
     );
@@ -552,7 +552,7 @@ class _OrderSummaryScreenState extends State<OrderSummaryScreen> {
           Row(
             children: [
               Text(
-                'Gold Membership',
+                'Membership',
                 style: AppTextStyle.normalRegular14.copyWith(color: whiteColor),
               ),
               const Spacer(),
