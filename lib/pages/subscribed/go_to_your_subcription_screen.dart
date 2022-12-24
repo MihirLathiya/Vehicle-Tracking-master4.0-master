@@ -346,7 +346,6 @@ class _GotoYourSubscriptionScreenState
                       await getAccessData(
                           data['data'][index]['place_id'].toString());
                       Get.to(() => SubscriptionDetailsScreen(
-                          accessx: accessx,
                           id: data['data'][index]['id'].toString(),
                           placeId: data['data'][index]['place_id'].toString()));
                     },
@@ -649,7 +648,6 @@ class _GotoYourSubscriptionScreenState
                       textInputAction: TextInputAction.done,
                       keyboardType: TextInputType.number,
                       onEditingComplete: () async {
-                        log('VEHICLE TYPE :- ${data['data'][index]['vehicle_type']}');
                         passFocus.unfocus();
                       },
                       decoration: InputDecoration(
@@ -668,53 +666,6 @@ class _GotoYourSubscriptionScreenState
                       ),
                     ),
                   ),
-                  height20,
-                  // const Text(
-                  //   'Auto Renewal',
-                  //   style: AppTextStyle.normalSemiBold16,
-                  // ),
-                  // const Divider(
-                  //   color: borderGreyColor,
-                  // ),
-                  // Row(
-                  //   children: [
-                  //     ...List.generate(
-                  //       2,
-                  //       (index) => Row(
-                  //         children: [
-                  //           Text('${slots[index]}'),
-                  //           SizedBox(
-                  //             width: 10,
-                  //           ),
-                  //           GestureDetector(
-                  //             onTap: () {
-                  //               state(() {
-                  //                 x = index;
-                  //               });
-                  //               remove.clear();
-                  //             },
-                  //             child: Container(
-                  //               height: 20,
-                  //               width: 20,
-                  //               padding: EdgeInsets.all(2),
-                  //               decoration: BoxDecoration(
-                  //                 shape: BoxShape.circle,
-                  //                 border: Border.all(color: Colors.red),
-                  //               ),
-                  //               child: CircleAvatar(
-                  //                   backgroundColor: x == index
-                  //                       ? Colors.red
-                  //                       : Colors.transparent),
-                  //             ),
-                  //           ),
-                  //           SizedBox(
-                  //             width: 30,
-                  //           )
-                  //         ],
-                  //       ),
-                  //     )
-                  //   ],
-                  // ),
                   height20,
                   Row(
                     children: [
@@ -824,39 +775,6 @@ class _GotoYourSubscriptionScreenState
                                     if (type == 'Open' || type == 'open') {
                                       log('TYPE IS OPEN');
                                       showAddDialog(index);
-
-                                      // var headers = {
-                                      //   'Authorization':
-                                      //       'Bearer ${PreferenceManager.getBariear()}'
-                                      // };
-                                      // var request = http.MultipartRequest(
-                                      //     'POST',
-                                      //     Uri.parse(
-                                      //         'https://i.invoiceapi.ml/api/customer/addSlot'));
-                                      // request.fields.addAll({
-                                      //   'subscription_id': '${subId}',
-                                      //   'parking_type': 'Open',
-                                      //   'slot_quantity': '${remove.text}',
-                                      // });
-                                      //
-                                      // request.headers.addAll(headers);
-                                      //
-                                      // http.StreamedResponse response =
-                                      //     await request.send();
-                                      //
-                                      // if (response.statusCode == 200) {
-                                      //   print(await response.stream
-                                      //       .bytesToString());
-                                      //   CommonSnackBar.commonSnackBar(
-                                      //       message: 'Successfully added');
-                                      //
-                                      //   Get.offAll(() => SlotDetailsScreen());
-                                      // } else {
-                                      //   Get.back();
-                                      //   log('ERROR:- ${response.reasonPhrase}');
-                                      //   CommonSnackBar.commonSnackBar(
-                                      //       message: 'Something went wrong');
-                                      // }
                                     } else {
                                       log('SubId :- ${data['data'][index]['id']}');
 
@@ -1008,7 +926,11 @@ class _GotoYourSubscriptionScreenState
                                 setState(
                                   () {
                                     slotNames = val.toString();
-                                    slotNamesValue = val.toString();
+                                    slotNamesValue = val
+                                        .toString()
+                                        .split('..')
+                                        .last
+                                        .toString();
                                   },
                                 );
                                 print('SlotNAMES VALUE :- ${slotNamesValue}');
@@ -1103,6 +1025,8 @@ class _GotoYourSubscriptionScreenState
                                 radius: 10,
                                 height: 45,
                                 onTap: () async {
+                                  log('HELLO  :- ${slotNames.toString().split('..').first}');
+                                  log('HELLO1  :- ${slotNamesValue}');
                                   if (isTermAgree.value == true) {
                                     var headers = {
                                       'Authorization':
@@ -1112,10 +1036,8 @@ class _GotoYourSubscriptionScreenState
                                         'POST',
                                         Uri.parse(
                                             'https://i.invoiceapi.ml/api/customer/removeSlot'));
-                                    request.fields.addAll({
-                                      'slot_id':
-                                          '${slotNames.toString().split('..').last}'
-                                    });
+                                    request.fields
+                                        .addAll({'slot_id': slotNamesValue});
                                     request.headers.addAll(headers);
 
                                     http.StreamedResponse response =
@@ -1240,7 +1162,12 @@ class _GotoYourSubscriptionScreenState
                                 setState(
                                   () {
                                     slotNames = val.toString();
-                                    slotNamesValue = val.toString();
+                                    slotNamesValue = val
+                                        .toString()
+                                        .split('..')
+                                        .last
+                                        .toString();
+                                    ;
                                   },
                                 );
                                 print(

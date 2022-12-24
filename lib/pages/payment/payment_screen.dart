@@ -102,8 +102,6 @@ class _PaymentScreenState extends State<PaymentScreen> {
 
   @override
   Widget build(BuildContext context) {
-    log('ALL DATA :- ${widget.vehicleNumber},${widget.subId},${widget.slotType},${widget.slotQuntity}');
-    log('ALL DATA :- ${PreferenceManager.getAccountNo()}');
     return Scaffold(
       extendBodyBehindAppBar: true,
       appBar: AppBar(

@@ -35,8 +35,8 @@ class SubscriptionDetailsScreen extends StatefulWidget {
 }
 
 class _SubscriptionDetailsScreenState extends State<SubscriptionDetailsScreen> {
-  List accessData = [''];
-  List data1 = [''];
+  List accessData = [];
+  List data1 = [];
 
   List selectedItem = [];
   AccessController accessController = Get.put(AccessController());
@@ -144,6 +144,7 @@ class _SubscriptionDetailsScreenState extends State<SubscriptionDetailsScreen> {
 
   @override
   Widget build(BuildContext context) {
+    log('ACCESS DATA S :- ${accessx}');
     return Scaffold(
       body: Stack(
         children: [
@@ -1274,28 +1275,75 @@ class _SubscriptionDetailsScreenState extends State<SubscriptionDetailsScreen> {
 
   fetchData(index) {
     try {
+      log('ALL DATA :- ${data}');
+      log('ALL DATA accessx :- ${accessx}');
+
+      if (accessx == null) {
+        accessx = {
+          "status": true,
+          "message": "access controls list",
+          "data": [
+            {
+              "id": 1,
+              "plase_id": 1,
+              "controls_id": 1,
+              "controls_prize": "30",
+              "created_at": "2022-12-17 15:30:21",
+              "updated_at": "2022-12-17 15:32:22",
+              "deposit_amount": 30,
+              "refund_amount": 20,
+              "control_name": "Access Card",
+              "prize": 20
+            },
+            {
+              "id": 2,
+              "plase_id": 1,
+              "controls_id": 2,
+              "controls_prize": "30",
+              "created_at": "2022-12-17 15:30:21",
+              "updated_at": "2022-12-17 15:32:26",
+              "deposit_amount": 25,
+              "refund_amount": 25,
+              "control_name": "Mobile",
+              "prize": 30
+            },
+            {
+              "id": 3,
+              "plase_id": 1,
+              "controls_id": 3,
+              "controls_prize": "30",
+              "created_at": "2022-12-17 15:30:47",
+              "updated_at": "2022-12-17 15:32:28",
+              "deposit_amount": 30,
+              "refund_amount": 25,
+              "control_name": "ANPR Camera",
+              "prize": 20
+            }
+          ]
+        };
+      }
       accessData.clear();
 
-      accessData = [''];
-      if ((data['data'] as List).length != selectedItem.length) {
-        print('ohh no bar bar andar');
-        selectedItem.add(data1[index]);
-      }
-      data['data'][index]['access_control']
-          .toString()
-          .replaceFirst('[', '')
-          .replaceAll(']', '')
-          .split(',')
-          .forEach((element) {
+      accessData = [];
+
+      data['data'][index]['access_control'].forEach((element) {
         accessData.add(element.toString().trim().toString());
       });
+
+      log('ACCESS DATA :- $accessData');
       data1.clear();
-      data1 = [''];
+      data1 = [];
 
       for (int i = 0; i < (accessx['data'] as List).length; i++) {
         if (accessData.contains('${accessx['data'][i]['controls_id']}')) {
           data1.insert(i, accessx['data'][i]['control_name']);
         }
+      }
+
+      log('DTA ! :- $data1');
+      if ((data['data'] as List).length != selectedItem.length) {
+        print('ohh no bar bar andar');
+        selectedItem.add(data1[index]);
       }
     } catch (e) {
       isLoading = false;
