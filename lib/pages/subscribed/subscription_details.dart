@@ -176,10 +176,12 @@ class _SubscriptionDetailsScreenState extends State<SubscriptionDetailsScreen> {
                                       ),
                               physics: const NeverScrollableScrollPhysics(),
                               itemBuilder: (BuildContext context, int index) {
-                                log('DATAS :- ${data['data'][index]['access_control'].toString().replaceFirst('[', '').replaceAll(']', '')}');
+                                log('DATAS :- ${data['data'][index]['subscription_id']}');
                                 fetchData(index);
                                 return subscriptionDetailsWidget(
                                     index: index,
+                                    subPlanId: data['data'][index]
+                                        ['subscription_id'],
                                     parking_name: data['data'][index]
                                         ['parking_name'],
                                     parkingtype: data['data'][index]
@@ -239,6 +241,7 @@ class _SubscriptionDetailsScreenState extends State<SubscriptionDetailsScreen> {
   Widget subscriptionDetailsWidget(
       {createdDate,
       index,
+      subPlanId,
       endDate,
       parking_number,
       id,
@@ -290,7 +293,8 @@ class _SubscriptionDetailsScreenState extends State<SubscriptionDetailsScreen> {
                     // });
                     fetchData(index);
 
-                    showEditDialog(id: id, renue: autoRenue);
+                    showEditDialog(
+                        id: id, renue: autoRenue, subPlanId: subPlanId);
                   },
                   child: Row(
                     children: [
@@ -511,7 +515,7 @@ class _SubscriptionDetailsScreenState extends State<SubscriptionDetailsScreen> {
     );
   }
 
-  void showEditDialog({id, renue}) {
+  void showEditDialog({id, renue, subPlanId}) {
     showDialog(
       context: context,
       builder: (context) {
@@ -545,7 +549,7 @@ class _SubscriptionDetailsScreenState extends State<SubscriptionDetailsScreen> {
                   customHeight(30),
                   feedBack(setStateDialog),
                   customHeight(30),
-                  bottomButtons(id: id),
+                  bottomButtons(id: id, subPlanId: subPlanId),
                   height10,
                 ],
               ),
@@ -865,7 +869,7 @@ class _SubscriptionDetailsScreenState extends State<SubscriptionDetailsScreen> {
             children: List.generate(
               changeAccessControlList.length,
               (index) => SizedBox(
-                width: 130,
+                width: 160,
                 child: Padding(
                   padding: const EdgeInsets.symmetric(vertical: 5.0),
                   child: Row(
@@ -988,7 +992,7 @@ class _SubscriptionDetailsScreenState extends State<SubscriptionDetailsScreen> {
     );
   }
 
-  Widget bottomButtons({id}) {
+  Widget bottomButtons({id, subPlanId}) {
     return Column(
       children: [
         Row(
@@ -1014,6 +1018,7 @@ class _SubscriptionDetailsScreenState extends State<SubscriptionDetailsScreen> {
                   onTap: () async {
                     log('ACCESS LIST :- ${accesControll}');
                     log('ACCESS LIST :- ${id}');
+                    log('PLAN SUB ID LIST :- ${subPlanId}');
                     // if (isTermAgree.value == true) {
                     var x = 0;
                     for (int i = 0; i < accesControllPrice.length; i++) {
@@ -1051,6 +1056,7 @@ class _SubscriptionDetailsScreenState extends State<SubscriptionDetailsScreen> {
                     } else {
                       Get.to(
                         () => OrderSummaryScreen(
+                          planSubId: subPlanId,
                           subId: id,
                           planPrice: 'NA',
                           slotQuntity: 1,

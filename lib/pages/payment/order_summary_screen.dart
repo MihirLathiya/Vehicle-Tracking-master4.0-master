@@ -30,6 +30,7 @@ class OrderSummaryScreen extends StatefulWidget {
 
   final vehicleNumber, accessController, accessPrice;
   final price;
+  final planSubId;
   const OrderSummaryScreen(
       {Key key,
       this.duration,
@@ -48,7 +49,8 @@ class OrderSummaryScreen extends StatefulWidget {
       this.subId,
       this.slotList,
       this.access,
-      this.renual})
+      this.renual,
+      this.planSubId})
       : super(key: key);
 
   @override
@@ -58,10 +60,13 @@ class OrderSummaryScreen extends StatefulWidget {
 class _OrderSummaryScreenState extends State<OrderSummaryScreen> {
   bool loading = false;
   dynamic paymentData;
+  List controllers = [];
+  List controllers1 = [];
   getAccountPayAmmount() async {
     setState(() {
       loading = true;
     });
+
     var headers = {'Authorization': 'Bearer ${PreferenceManager.getBariear()}'};
     var request = http.Request(
         'GET',
@@ -87,9 +92,53 @@ class _OrderSummaryScreenState extends State<OrderSummaryScreen> {
     }
   }
 
+  getAccessControlePayAmount() async {
+    setState(() {
+      loading = true;
+    });
+    controllers1.clear();
+    String aaa = '';
+    for (int i = 0; i < controllers.length; i++) {
+      controllers1.add({'&access_control[$i]': '${controllers[i]}'});
+      aaa = '${aaa}&access_control[$i]=${controllers[i]}';
+    }
+    print('aaaaaaaaa====> ${aaa}');
+
+    //
+    // link.
+    var headers = {'Authorization': 'Bearer ${PreferenceManager.getBariear()}'};
+    var request = http.Request(
+        'GET',
+        Uri.parse(
+            'https://i.invoiceapi.ml/api/customer/getPaymentAmountAccesscontrol?subscription_id=${widget.planSubId}$aaa'));
+
+    request.headers.addAll(headers);
+
+    http.StreamedResponse response = await request.send();
+
+    if (response.statusCode == 200) {
+      paymentData = jsonDecode(await response.stream.bytesToString());
+      setState(() {});
+      print('PAYMENT ADD SLOT :- ${paymentData}');
+      setState(() {
+        loading = false;
+      });
+    } else {
+      print(response.reasonPhrase);
+      setState(() {
+        loading = true;
+      });
+    }
+  }
+
   @override
   void initState() {
-    getAccountPayAmmount();
+    controllers = widget.accessController;
+    if (widget.renual != null && widget.planSubId != null) {
+      getAccessControlePayAmount();
+    } else {
+      getAccountPayAmmount();
+    }
     super.initState();
   }
 
@@ -97,6 +146,7 @@ class _OrderSummaryScreenState extends State<OrderSummaryScreen> {
   Widget build(BuildContext context) {
     log('DATA ${widget.subId}');
     log('DATA ${widget.access}');
+    log('SLOT DATA ${widget.renual} ${widget.planSubId}');
     return Scaffold(
       extendBodyBehindAppBar: true,
       backgroundColor: Colors.black,
@@ -118,12 +168,15 @@ class _OrderSummaryScreenState extends State<OrderSummaryScreen> {
           ),
         ),
       ),
-      body: widget.subId != null
+      body: widget.subId != null && widget.renual == null
           ? loading == true
               ? Center(
                   child: CircularProgressIndicator(),
                 )
-              : Stack(
+              :
+
+              /// ADD SLOT
+              Stack(
                   children: [
                     Container(
                       height: Get.height,
@@ -208,90 +261,187 @@ class _OrderSummaryScreenState extends State<OrderSummaryScreen> {
                     ),
                   ],
                 )
-          : Stack(
-              children: [
-                Container(
-                  height: Get.height,
-                  width: Get.width,
-                  padding: const EdgeInsets.only(bottom: 70),
-                  decoration: const BoxDecoration(
-                    image: DecorationImage(
-                      image: AssetImage(AppAsset.paymentbackground),
-                      fit: BoxFit.cover,
-                    ),
-                  ),
-                  child: SafeArea(
-                    child: SingleChildScrollView(
-                      child: Column(
-                        children: [
-                          const SizedBox(
-                            height: 20,
+          : widget.renual != null &&
+                  widget.planSubId != null &&
+                  widget.subId != null
+              ?
+
+              /// EDIT SLOT
+              Stack(
+                  children: [
+                    Container(
+                      height: Get.height,
+                      width: Get.width,
+                      padding: const EdgeInsets.only(bottom: 70),
+                      decoration: const BoxDecoration(
+                        image: DecorationImage(
+                          image: AssetImage(AppAsset.paymentbackground),
+                          fit: BoxFit.cover,
+                        ),
+                      ),
+                      child: SafeArea(
+                        child: SingleChildScrollView(
+                          child: Column(
+                            children: [
+                              const SizedBox(
+                                height: 20,
+                              ),
+                              membershipPlan(),
+                              height10,
+                              totalControls(),
+                              height10,
+                              // priceDetails(),
+                            ],
                           ),
-                          membershipPlan(),
-                          height10,
-                          totalControls(),
-                          height10,
-                          priceDetails(),
-                        ],
+                        ),
                       ),
                     ),
-                  ),
-                ),
-                Align(
-                  alignment: Alignment.bottomCenter,
-                  child: Container(
-                    height: 70,
-                    color: blackColor.withOpacity(0.20),
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 20,
-                    ),
-                    child: Row(
-                      children: [
-                        Text(
-                          '${widget.totalCount}/-',
-                          style:
-                              AppTextStyle.bold16.copyWith(color: whiteColor),
+                    Align(
+                      alignment: Alignment.bottomCenter,
+                      child: Container(
+                        height: 70,
+                        color: blackColor.withOpacity(0.20),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 20,
                         ),
-                        const Spacer(),
-                        SizedBox(
-                          width: 130,
-                          height: 40,
-                          child: AppFillButton(
-                            radius: 10,
-                            onTap: () {
-                              log('DURATION ${widget.duration}');
-                              log('location ${widget.location}');
-                              log('vehicleType ${widget.vehicleType}');
-                              log('slotType ${widget.slotType}');
-                              log('slotQuntity ${widget.slotQuntity}');
-                              log('vehicleNumber ${widget.vehicleNumber}');
-                              log('price ${widget.price}');
-                              log('access Controller ${widget.accessController}');
-                              log(' slotList: selectedSlot, ${widget.slotList}');
-                              Get.to(() => PaymentScreen(
-                                  slotList: widget.slotList,
-                                  subId: widget.subId,
-                                  total: widget.totalCount,
-                                  placeId: widget.placeId,
-                                  accessController: widget.accessController,
-                                  slotQuntity: widget.slotQuntity,
-                                  slotType: widget.slotType,
-                                  vehicleNumber: widget.vehicleNumber,
-                                  vehicleType: widget.vehicleType,
-                                  location: widget.location,
-                                  duration: widget.duration,
-                                  price: widget.price));
-                            },
-                            title: 'Continue',
-                            fontSize: 15,
+                        child: Row(
+                          children: [
+                            Text(
+                              '${paymentData['data']['total_prize']}/-',
+                              style: AppTextStyle.bold16
+                                  .copyWith(color: whiteColor),
+                            ),
+                            const Spacer(),
+                            SizedBox(
+                              width: 130,
+                              height: 40,
+                              child: AppFillButton(
+                                radius: 10,
+                                onTap: () {
+                                  log('DURATION ${widget.duration}');
+                                  log('location ${widget.location}');
+                                  log('vehicleType ${widget.vehicleType}');
+                                  log('slotType ${widget.slotType}');
+                                  log('slotQuntity ${widget.slotQuntity}');
+                                  log('vehicleNumber ${widget.vehicleNumber}');
+                                  log('price ${widget.price}');
+                                  log('access Controller ${widget.accessController}');
+                                  log(' slotList: selectedSlot, ${widget.slotList}');
+                                  Get.to(
+                                    () => PaymentScreen(
+                                      renuea: widget.renual,
+                                      slotList: widget.slotList,
+                                      subId: widget.subId,
+                                      total: paymentData['data']['amount'],
+                                      placeId: widget.placeId,
+                                      accessController: widget.accessController,
+                                      slotQuntity: widget.slotQuntity,
+                                      slotType: widget.slotType,
+                                      vehicleNumber: widget.vehicleNumber,
+                                      vehicleType: widget.vehicleType,
+                                      location: widget.location,
+                                      duration: widget.duration,
+                                      price: widget.price,
+                                    ),
+                                  );
+                                },
+                                title: 'Continue',
+                                fontSize: 15,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ],
+                )
+              :
+
+              /// CREATE SUBSCRIPTION
+              Stack(
+                  children: [
+                    Container(
+                      height: Get.height,
+                      width: Get.width,
+                      padding: const EdgeInsets.only(bottom: 70),
+                      decoration: const BoxDecoration(
+                        image: DecorationImage(
+                          image: AssetImage(AppAsset.paymentbackground),
+                          fit: BoxFit.cover,
+                        ),
+                      ),
+                      child: SafeArea(
+                        child: SingleChildScrollView(
+                          child: Column(
+                            children: [
+                              const SizedBox(
+                                height: 20,
+                              ),
+                              membershipPlan(),
+                              height10,
+                              totalControls(),
+                              height10,
+                              priceDetails(),
+                            ],
                           ),
                         ),
-                      ],
+                      ),
                     ),
-                  ),
+                    Align(
+                      alignment: Alignment.bottomCenter,
+                      child: Container(
+                        height: 70,
+                        color: blackColor.withOpacity(0.20),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 20,
+                        ),
+                        child: Row(
+                          children: [
+                            Text(
+                              '${widget.totalCount}/-',
+                              style: AppTextStyle.bold16
+                                  .copyWith(color: whiteColor),
+                            ),
+                            const Spacer(),
+                            SizedBox(
+                              width: 130,
+                              height: 40,
+                              child: AppFillButton(
+                                radius: 10,
+                                onTap: () {
+                                  log('DURATION ${widget.duration}');
+                                  log('location ${widget.location}');
+                                  log('vehicleType ${widget.vehicleType}');
+                                  log('slotType ${widget.slotType}');
+                                  log('slotQuntity ${widget.slotQuntity}');
+                                  log('vehicleNumber ${widget.vehicleNumber}');
+                                  log('price ${widget.price}');
+                                  log('access Controller ${widget.accessController}');
+                                  log(' slotList: selectedSlot, ${widget.slotList}');
+                                  Get.to(() => PaymentScreen(
+                                      slotList: widget.slotList,
+                                      subId: widget.subId,
+                                      total: widget.totalCount,
+                                      placeId: widget.placeId,
+                                      accessController: widget.accessController,
+                                      slotQuntity: widget.slotQuntity,
+                                      slotType: widget.slotType,
+                                      vehicleNumber: widget.vehicleNumber,
+                                      vehicleType: widget.vehicleType,
+                                      location: widget.location,
+                                      duration: widget.duration,
+                                      price: widget.price));
+                                },
+                                title: 'Continue',
+                                fontSize: 15,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
-              ],
-            ),
     );
   }
 

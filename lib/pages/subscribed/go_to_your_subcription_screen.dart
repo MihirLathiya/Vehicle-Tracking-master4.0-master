@@ -812,6 +812,7 @@ class _GotoYourSubscriptionScreenState
                                     if (type == 'Open' || type == 'open') {
                                       log('TYPE IS OPEN');
                                       showAddDialog(index);
+
                                       // var headers = {
                                       //   'Authorization':
                                       //       'Bearer ${PreferenceManager.getBariear()}'
@@ -845,6 +846,8 @@ class _GotoYourSubscriptionScreenState
                                       //       message: 'Something went wrong');
                                       // }
                                     } else {
+                                      log('SubId :- ${data['data'][index]['id']}');
+
                                       PreferenceManager.setPlaceId(data['data']
                                               [index]['place_id']
                                           .toString());

@@ -93,6 +93,7 @@ class _SlotDetailsScreenState extends State<SlotDetailsScreen> {
             alignment: Alignment.bottomCenter,
             child: SafeArea(
               child: SingleChildScrollView(
+                physics: BouncingScrollPhysics(),
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: [
