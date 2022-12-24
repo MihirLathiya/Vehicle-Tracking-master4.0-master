@@ -1308,6 +1308,18 @@ class _SubscriptionDetailsScreenState extends State<SubscriptionDetailsScreen> {
               "prize": 30
             },
             {
+              "id": 5,
+              "plase_id": 5,
+              "controls_id": 5,
+              "controls_prize": "30",
+              "created_at": "2022-12-17 15:31:13",
+              "updated_at": "2022-12-17 15:32:38",
+              "deposit_amount": 25,
+              "refund_amount": 25,
+              "control_name": "QR Code",
+              "prize": 40
+            },
+            {
               "id": 3,
               "plase_id": 1,
               "controls_id": 3,
@@ -1318,6 +1330,18 @@ class _SubscriptionDetailsScreenState extends State<SubscriptionDetailsScreen> {
               "refund_amount": 25,
               "control_name": "ANPR Camera",
               "prize": 20
+            },
+            {
+              "id": 4,
+              "plase_id": 5,
+              "controls_id": 4,
+              "controls_prize": "40",
+              "created_at": "2022-12-17 15:30:47",
+              "updated_at": "2022-12-17 15:32:36",
+              "deposit_amount": 30,
+              "refund_amount": 29,
+              "control_name": "Remote Control",
+              "prize": 30
             }
           ]
         };
