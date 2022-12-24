@@ -1112,9 +1112,10 @@ class _GotoYourSubscriptionScreenState
                                         'POST',
                                         Uri.parse(
                                             'https://i.invoiceapi.ml/api/customer/removeSlot'));
-                                    request.fields.addAll(
-                                        {'slot_id': '${slotNamesValue}'});
-
+                                    request.fields.addAll({
+                                      'slot_id':
+                                          '${slotNames.toString().split('..').last}'
+                                    });
                                     request.headers.addAll(headers);
 
                                     http.StreamedResponse response =

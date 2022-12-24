@@ -1277,6 +1277,10 @@ class _SubscriptionDetailsScreenState extends State<SubscriptionDetailsScreen> {
       accessData.clear();
 
       accessData = [''];
+      if ((data['data'] as List).length != selectedItem.length) {
+        print('ohh no bar bar andar');
+        selectedItem.add(data1[index]);
+      }
       data['data'][index]['access_control']
           .toString()
           .replaceFirst('[', '')
@@ -1292,10 +1296,6 @@ class _SubscriptionDetailsScreenState extends State<SubscriptionDetailsScreen> {
         if (accessData.contains('${accessx['data'][i]['controls_id']}')) {
           data1.insert(i, accessx['data'][i]['control_name']);
         }
-      }
-      if ((data['data'] as List).length != selectedItem.length) {
-        print('ohh no bar bar andar');
-        selectedItem.add(data1[index]);
       }
     } catch (e) {
       isLoading = false;
