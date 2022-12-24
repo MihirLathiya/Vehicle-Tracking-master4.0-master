@@ -115,36 +115,100 @@ class _SubscriptionDetailsScreenState extends State<SubscriptionDetailsScreen> {
             : widget.placeId);
   }
 
-  dynamic accessx;
-  getAccessData() async {
-    var headers = {'Authorization': 'Bearer ${PreferenceManager.getBariear()}'};
-    var request = await http.get(
-        Uri.parse(
-            'https://i.invoiceapi.ml/api/customer/getAccessControls?place_id=${widget.placeId == null ? PreferenceManager.getPlaceId() : widget.placeId}'),
-        headers: headers);
-
-    if (request.statusCode == 200) {
-      accessx = jsonDecode(await request.body);
-      print('GET DATA :- $accessx');
-      setState(() {});
-    } else {
-      print(request.reasonPhrase);
-    }
-  }
+  dynamic accessx = {
+    "status": true,
+    "message": "access controls list",
+    "data": [
+      {
+        "id": 1,
+        "plase_id": 1,
+        "controls_id": 1,
+        "controls_prize": "30",
+        "created_at": "2022-12-17 15:30:21",
+        "updated_at": "2022-12-17 15:32:22",
+        "deposit_amount": 30,
+        "refund_amount": 20,
+        "control_name": "Access Card",
+        "prize": 20
+      },
+      {
+        "id": 2,
+        "plase_id": 1,
+        "controls_id": 2,
+        "controls_prize": "30",
+        "created_at": "2022-12-17 15:30:21",
+        "updated_at": "2022-12-17 15:32:26",
+        "deposit_amount": 25,
+        "refund_amount": 25,
+        "control_name": "Mobile",
+        "prize": 30
+      },
+      {
+        "id": 5,
+        "plase_id": 5,
+        "controls_id": 5,
+        "controls_prize": "30",
+        "created_at": "2022-12-17 15:31:13",
+        "updated_at": "2022-12-17 15:32:38",
+        "deposit_amount": 25,
+        "refund_amount": 25,
+        "control_name": "QR Code",
+        "prize": 40
+      },
+      {
+        "id": 3,
+        "plase_id": 1,
+        "controls_id": 3,
+        "controls_prize": "30",
+        "created_at": "2022-12-17 15:30:47",
+        "updated_at": "2022-12-17 15:32:28",
+        "deposit_amount": 30,
+        "refund_amount": 25,
+        "control_name": "ANPR Camera",
+        "prize": 20
+      },
+      {
+        "id": 4,
+        "plase_id": 5,
+        "controls_id": 4,
+        "controls_prize": "40",
+        "created_at": "2022-12-17 15:30:47",
+        "updated_at": "2022-12-17 15:32:36",
+        "deposit_amount": 30,
+        "refund_amount": 29,
+        "control_name": "Remote Control",
+        "prize": 30
+      }
+    ]
+  };
+  // getAccessData() async {
+  //   var headers = {'Authorization': 'Bearer ${PreferenceManager.getBariear()}'};
+  //   var request = await http.get(
+  //       Uri.parse(
+  //           'https://i.invoiceapi.ml/api/customer/getAccessControls?place_id=${widget.placeId == null ? PreferenceManager.getPlaceId() : widget.placeId}'),
+  //       headers: headers);
+  //
+  //   if (request.statusCode == 200) {
+  //     accessx = jsonDecode(await request.body);
+  //     print('GET DATA :- $accessx');
+  //     setState(() {});
+  //   } else {
+  //     print(request.reasonPhrase);
+  //   }
+  // }
 
   @override
   void initState() {
-    accessx = widget.accessx;
-    getAccessData();
+    // accessx = widget.accessx;
+    // getAccessData();
     getSubDetails(widget.id);
-    getAccessControlle();
+    // getAccessControlle();
     // subscriptionDetailsViewModel.subscriptionDetailsViewModel();
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
-    log('ACCESS DATA S :- ${accessx}');
     return Scaffold(
       body: Stack(
         children: [
@@ -1278,74 +1342,6 @@ class _SubscriptionDetailsScreenState extends State<SubscriptionDetailsScreen> {
       log('ALL DATA :- ${data}');
       log('ALL DATA accessx :- ${accessx}');
 
-      if (accessx == null) {
-        accessx = {
-          "status": true,
-          "message": "access controls list",
-          "data": [
-            {
-              "id": 1,
-              "plase_id": 1,
-              "controls_id": 1,
-              "controls_prize": "30",
-              "created_at": "2022-12-17 15:30:21",
-              "updated_at": "2022-12-17 15:32:22",
-              "deposit_amount": 30,
-              "refund_amount": 20,
-              "control_name": "Access Card",
-              "prize": 20
-            },
-            {
-              "id": 2,
-              "plase_id": 1,
-              "controls_id": 2,
-              "controls_prize": "30",
-              "created_at": "2022-12-17 15:30:21",
-              "updated_at": "2022-12-17 15:32:26",
-              "deposit_amount": 25,
-              "refund_amount": 25,
-              "control_name": "Mobile",
-              "prize": 30
-            },
-            {
-              "id": 5,
-              "plase_id": 5,
-              "controls_id": 5,
-              "controls_prize": "30",
-              "created_at": "2022-12-17 15:31:13",
-              "updated_at": "2022-12-17 15:32:38",
-              "deposit_amount": 25,
-              "refund_amount": 25,
-              "control_name": "QR Code",
-              "prize": 40
-            },
-            {
-              "id": 3,
-              "plase_id": 1,
-              "controls_id": 3,
-              "controls_prize": "30",
-              "created_at": "2022-12-17 15:30:47",
-              "updated_at": "2022-12-17 15:32:28",
-              "deposit_amount": 30,
-              "refund_amount": 25,
-              "control_name": "ANPR Camera",
-              "prize": 20
-            },
-            {
-              "id": 4,
-              "plase_id": 5,
-              "controls_id": 4,
-              "controls_prize": "40",
-              "created_at": "2022-12-17 15:30:47",
-              "updated_at": "2022-12-17 15:32:36",
-              "deposit_amount": 30,
-              "refund_amount": 29,
-              "control_name": "Remote Control",
-              "prize": 30
-            }
-          ]
-        };
-      }
       accessData.clear();
 
       accessData = [];
