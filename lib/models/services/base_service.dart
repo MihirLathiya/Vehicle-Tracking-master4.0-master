@@ -6,6 +6,10 @@ class BaseService<T> {
       'https://i.invoiceapi.ml/api/customer/storeVehicleNumber';
   final String subscriptionDetail =
       'https://i.invoiceapi.ml/api/customer/subscriptionDetails';
+  final String subscriptionSlotDetail =
+      'https://i.invoiceapi.ml/api/customer/subscriptionSlotDetails?subscription_id=';
+  final String accessControl =
+      'https://i.invoiceapi.ml/api/customer/getAccessControls?place_id=';
   final String forgotPassword =
       'https://i.invoiceapi.ml/api/customer/forgetPassword';
   final String createPassword =

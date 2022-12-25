@@ -467,23 +467,31 @@ class _PaymentScreenState extends State<PaymentScreen> {
       }
     } else {
       selected1.clear();
+      controllers1.clear();
+
       for (int i = 0; i < selected.length; i++) {
         selected1.addAll({'sloat_list[$i]': '${selected[i]}'});
       }
+
+      for (int i = 0; i < controllers.length; i++) {
+        controllers1.addAll({'access_controls[$i]': '${controllers[i]}'});
+      }
       Map<String, dynamic> bodyy11 = {
         'subscription_id': '${widget.subId}',
-        'parking_type': 'Reserved',
+        'parking_type': 'reserved',
         'slot_quantity': '${widget.slotQuntity}',
         'vehicle_number': '${widget.vehicleNumber}'
       };
       bodyy11.addAll(selected1);
-      log('BODTYS ADD :- $bodyy11');
+      bodyy11.addAll(controllers1);
+      log('ADD SLOT BODY  :- $bodyy11');
       var request = await http.post(
           Uri.parse('https://i.invoiceapi.ml/api/customer/addSlot'),
           body: bodyy11,
           headers: headers);
       log('RESPONSE CODE :- ${request.statusCode}');
       if (request.statusCode == 200) {
+        log('RESPONSE STATUS :- ${await jsonDecode(request.body)}');
         Get.offAll(() => SlotDetailsScreen());
         CommonSnackBar.commonSnackBar(message: 'Successfully added');
       } else {

@@ -464,10 +464,10 @@ class _OrderSummaryScreenState extends State<OrderSummaryScreen> {
             style: AppTextStyle.normalRegular14.copyWith(color: whiteColor),
           ),
           const Spacer(),
-          // Text(
-          //   '${widget.planPrice}/-',
-          //   style: AppTextStyle.bold16.copyWith(color: whiteColor),
-          // ),
+          Text(
+            '${widget.planPrice}/-',
+            style: AppTextStyle.bold16.copyWith(color: whiteColor),
+          ),
         ],
       ),
     );

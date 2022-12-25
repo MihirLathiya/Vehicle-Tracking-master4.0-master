@@ -1,19 +1,17 @@
 // To parse this JSON data, do
 //
-//     final subscriptionDetailsResponseModel = subscriptionDetailsResponseModelFromJson(jsonString);
+//     final getSubscriptionResponseModel = getSubscriptionResponseModelFromJson(jsonString);
 
 import 'dart:convert';
 
-SubscriptionDetailsResponseModel subscriptionDetailsResponseModelFromJson(
-        String str) =>
-    SubscriptionDetailsResponseModel.fromJson(json.decode(str));
+GetSubscriptionResponseModel getSubscriptionResponseModelFromJson(String str) =>
+    GetSubscriptionResponseModel.fromJson(json.decode(str));
 
-String subscriptionDetailsResponseModelToJson(
-        SubscriptionDetailsResponseModel data) =>
+String getSubscriptionResponseModelToJson(GetSubscriptionResponseModel data) =>
     json.encode(data.toJson());
 
-class SubscriptionDetailsResponseModel {
-  SubscriptionDetailsResponseModel({
+class GetSubscriptionResponseModel {
+  GetSubscriptionResponseModel({
     this.status,
     this.message,
     this.data,
@@ -23,9 +21,8 @@ class SubscriptionDetailsResponseModel {
   String message;
   List<Datum> data;
 
-  factory SubscriptionDetailsResponseModel.fromJson(
-          Map<String, dynamic> json) =>
-      SubscriptionDetailsResponseModel(
+  factory GetSubscriptionResponseModel.fromJson(Map<String, dynamic> json) =>
+      GetSubscriptionResponseModel(
         status: json["status"],
         message: json["message"],
         data: List<Datum>.from(json["data"].map((x) => Datum.fromJson(x))),
@@ -46,34 +43,42 @@ class Datum {
     this.strtDate,
     this.endDate,
     this.subscriptionAmount,
-    this.parkingNumber,
+    this.parkingType,
+    this.parkingLocation,
+    this.vehicleType,
   });
 
   int id;
   int placeId;
   String slotQuantity;
-  dynamic strtDate;
-  dynamic endDate;
+  DateTime strtDate;
+  DateTime endDate;
   String subscriptionAmount;
-  dynamic parkingNumber;
+  String parkingType;
+  String parkingLocation;
+  String vehicleType;
 
   factory Datum.fromJson(Map<String, dynamic> json) => Datum(
         id: json["id"],
         placeId: json["place_id"],
         slotQuantity: json["slot_quantity"],
-        strtDate: json["strt_date"],
-        endDate: json["end_date"],
+        strtDate: DateTime.parse(json["strt_date"]),
+        endDate: DateTime.parse(json["end_date"]),
         subscriptionAmount: json["subscription_amount"],
-        parkingNumber: json["parking_number"],
+        parkingType: json["parking_type"],
+        parkingLocation: json["parking_location"],
+        vehicleType: json["vehicle_type"],
       );
 
   Map<String, dynamic> toJson() => {
         "id": id,
         "place_id": placeId,
         "slot_quantity": slotQuantity,
-        "strt_date": strtDate,
-        "end_date": endDate,
+        "strt_date": strtDate.toIso8601String(),
+        "end_date": endDate.toIso8601String(),
         "subscription_amount": subscriptionAmount,
-        "parking_number": parkingNumber,
+        "parking_type": parkingType,
+        "parking_location": parkingLocation,
+        "vehicle_type": vehicleType,
       };
 }

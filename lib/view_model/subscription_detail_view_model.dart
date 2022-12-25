@@ -14,7 +14,7 @@ class SubscriptionDetailsViewModel extends GetxController {
     _subscriptionDetailApiResponse = ApiResponse.loading(message: 'Loading');
     update();
     try {
-      SubscriptionDetailsResponseModel response =
+      GetSubscriptionResponseModel response =
           await SubscriptionDetailsRepo().subscriptionDetailsRepo();
       print("SubscriptionDetailsResponseModel=response==>$response");
 

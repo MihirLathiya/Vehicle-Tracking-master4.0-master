@@ -249,10 +249,9 @@ class _GotoYourSubscriptionScreenState
                             SizedBox(
                               width: Get.width / 3,
                               child: Text(
-                                'Parking Number',
-                                style: AppTextStyle.normalSemiBold16.copyWith(
-                                  color: greyColor,
-                                ),
+                                'Deposited amount',
+                                style: AppTextStyle.normalSemiBold16
+                                    .copyWith(color: greyColor, fontSize: 15),
                               ),
                             ),
                             SizedBox(
@@ -260,8 +259,9 @@ class _GotoYourSubscriptionScreenState
                               child: TextField(
                                 enabled: false,
                                 style: AppTextStyle.normalRegular14,
-                                controller:
-                                    TextEditingController(text: 'B1-02'),
+                                controller: TextEditingController(
+                                    text:
+                                        '${data['data'][index]['deposited_amount']}/-'),
                                 textAlign: TextAlign.center,
                                 decoration: const InputDecoration(
                                   isDense: true,

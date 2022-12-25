@@ -3,6 +3,8 @@ import 'package:get/get.dart';
 import 'package:vehicletracking/models/apis/api_response.dart';
 import 'package:vehicletracking/models/repo/get_parking_slot_repo.dart';
 import 'package:vehicletracking/models/response_model/get_parking_slot_res_model.dart';
+import 'package:vehicletracking/pages/auth/sign_in.dart';
+import 'package:vehicletracking/prefrence_manager/prefrence_manager.dart';
 
 class GetParkingSlotViewModel extends GetxController {
   TextEditingController des = TextEditingController();
@@ -31,6 +33,9 @@ class GetParkingSlotViewModel extends GetxController {
       _getParkingSlotApiResponse = ApiResponse.complete(response);
     } catch (e) {
       print("getParkingSlotResponseModel=e==>$e");
+
+      Get.offAll(() => SignInScreen());
+      PreferenceManager.getClear();
       _getParkingSlotApiResponse = ApiResponse.error(message: 'error');
     }
     update();

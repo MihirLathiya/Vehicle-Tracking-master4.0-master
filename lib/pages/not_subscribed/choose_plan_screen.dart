@@ -151,20 +151,20 @@ class _ChoosePlanScreenState extends State<ChoosePlanScreen> {
                                           CrossAxisAlignment.center,
                                       children: [
                                         height20,
-                                        Container(
-                                          padding: const EdgeInsets.symmetric(
-                                              horizontal: 20, vertical: 5),
-                                          decoration: BoxDecoration(
-                                              color:
-                                                  whiteColor.withOpacity(0.14),
-                                              borderRadius:
-                                                  BorderRadius.circular(30)),
-                                          child: Text(
-                                            'Silver',
-                                            style: AppTextStyle.normalRegular14
-                                                .copyWith(color: greyColor),
-                                          ),
-                                        ),
+                                        // Container(
+                                        //   padding: const EdgeInsets.symmetric(
+                                        //       horizontal: 20, vertical: 5),
+                                        //   decoration: BoxDecoration(
+                                        //       color:
+                                        //           whiteColor.withOpacity(0.14),
+                                        //       borderRadius:
+                                        //           BorderRadius.circular(30)),
+                                        //   child: Text(
+                                        //     'Silver',
+                                        //     style: AppTextStyle.normalRegular14
+                                        //         .copyWith(color: greyColor),
+                                        //   ),
+                                        // ),
                                         height20,
                                         Text(
                                           '${subController.planDetails['price']}/-',
