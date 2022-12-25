@@ -343,8 +343,7 @@ class _GotoYourSubscriptionScreenState
                       log('DATA ID :- ${data['data'][index]['id']}');
                       PreferenceManager.setPlaceId(
                           data['data'][index]['place_id'].toString());
-                      await getAccessData(
-                          data['data'][index]['place_id'].toString());
+
                       Get.to(() => SubscriptionDetailsScreen(
                           id: data['data'][index]['id'].toString(),
                           placeId: data['data'][index]['place_id'].toString()));

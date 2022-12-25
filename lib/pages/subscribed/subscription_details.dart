@@ -24,10 +24,12 @@ import 'package:vehicletracking/widgets/app_text_form_field.dart';
 class SubscriptionDetailsScreen extends StatefulWidget {
   final id;
   final placeId;
-  final accessx;
-  const SubscriptionDetailsScreen(
-      {Key key, this.id, this.placeId, this.accessx})
-      : super(key: key);
+
+  const SubscriptionDetailsScreen({
+    Key key,
+    this.id,
+    this.placeId,
+  }) : super(key: key);
 
   @override
   State<SubscriptionDetailsScreen> createState() =>
@@ -115,102 +117,8 @@ class _SubscriptionDetailsScreenState extends State<SubscriptionDetailsScreen> {
             : widget.placeId);
   }
 
-  dynamic accessx = {
-    "data": [
-      {
-        "id": 1,
-        "plase_id": 1,
-        "controls_id": 1,
-        "controls_prize": "30",
-        "created_at": "2022-12-17 15:30:21",
-        "updated_at": "2022-12-17 15:32:22",
-        "deposit_amount": 30,
-        "refund_amount": 20,
-        "control_name": "Access Card",
-        "prize": 20
-      },
-      {
-        "id": 2,
-        "plase_id": 1,
-        "controls_id": 2,
-        "controls_prize": "30",
-        "created_at": "2022-12-17 15:30:21",
-        "updated_at": "2022-12-17 15:32:26",
-        "deposit_amount": 25,
-        "refund_amount": 25,
-        "control_name": "Mobile",
-        "prize": 30
-      },
-      {
-        "id": 5,
-        "plase_id": 5,
-        "controls_id": 5,
-        "controls_prize": "30",
-        "created_at": "2022-12-17 15:31:13",
-        "updated_at": "2022-12-17 15:32:38",
-        "deposit_amount": 25,
-        "refund_amount": 25,
-        "control_name": "QR Code",
-        "prize": 40
-      },
-      {
-        "id": 3,
-        "plase_id": 1,
-        "controls_id": 3,
-        "controls_prize": "30",
-        "created_at": "2022-12-17 15:30:47",
-        "updated_at": "2022-12-17 15:32:28",
-        "deposit_amount": 30,
-        "refund_amount": 25,
-        "control_name": "ANPR Camera",
-        "prize": 20
-      },
-      {
-        "id": 4,
-        "plase_id": 5,
-        "controls_id": 4,
-        "controls_prize": "40",
-        "created_at": "2022-12-17 15:30:47",
-        "updated_at": "2022-12-17 15:32:36",
-        "deposit_amount": 30,
-        "refund_amount": 29,
-        "control_name": "Remote Control",
-        "prize": 30
-      },
-      {
-        "id": 6,
-        "plase_id": 7,
-        "controls_id": 6,
-        "controls_prize": "40",
-        "created_at": "2022-12-17 15:31:13",
-        "updated_at": "2022-12-17 15:32:42",
-        "deposit_amount": 30,
-        "refund_amount": 29,
-        "control_name": "Others",
-        "prize": 50
-      }
-    ]
-  };
-  // getAccessData() async {
-  //   var headers = {'Authorization': 'Bearer ${PreferenceManager.getBariear()}'};
-  //   var request = await http.get(
-  //       Uri.parse(
-  //           'https://i.invoiceapi.ml/api/customer/getAccessControls?place_id=${widget.placeId == null ? PreferenceManager.getPlaceId() : widget.placeId}'),
-  //       headers: headers);
-  //
-  //   if (request.statusCode == 200) {
-  //     accessx = jsonDecode(await request.body);
-  //     print('GET DATA :- $accessx');
-  //     setState(() {});
-  //   } else {
-  //     print(request.reasonPhrase);
-  //   }
-  // }
-
   @override
   void initState() {
-    // accessx = widget.accessx;
-    // getAccessData();
     getSubDetails(widget.id);
     accessController.accessControllerViewModel(
         id: widget.placeId == null
@@ -256,38 +164,56 @@ class _SubscriptionDetailsScreenState extends State<SubscriptionDetailsScreen> {
                               physics: const NeverScrollableScrollPhysics(),
                               itemBuilder: (BuildContext context, int index) {
                                 log('DATAS :- ${data['data'][index]['subscription_id']}');
-                                fetchData(index);
-                                return subscriptionDetailsWidget(
-                                    index: index,
-                                    selectedController: selectedItem,
-                                    subPlanId: data['data'][index]
-                                        ['subscription_id'],
-                                    parking_name: data['data'][index]
-                                        ['parking_name'],
-                                    parkingtype: data['data'][index]
-                                        ['parking_type'],
-                                    autoRenue:
-                                        data['data'][index]['auto_renewal'] == 1
-                                            ? 'Yes'
-                                            : 'No',
-                                    createdDate: data['data'][index]
-                                            ['strt_date']
-                                        .toString()
-                                        .split(' ')
-                                        .first,
-                                    accessControllerList: data1,
-                                    id: data['data'][index]['id'],
-                                    slot_quantity: data['data'][index]
-                                        ['slot_quantity'],
-                                    subscriptionAmount: data['data'][index]
-                                        ['subscription_amount'],
-                                    placeId: data['data'][index]['place_id'],
-                                    parking_number: data['data'][index]
-                                        ['strt_date'],
-                                    endDate: data['data'][index]['end_date']
-                                        .toString()
-                                        .split(' ')
-                                        .first);
+                                return GetBuilder<AccessController>(
+                                  builder: (controller) {
+                                    if (controller.accessApiResponse.status ==
+                                        Status.LOADING) {
+                                      return Center(
+                                        child: CircularProgressIndicator(),
+                                      );
+                                    }
+                                    if (controller.accessApiResponse.status ==
+                                        Status.COMPLETE) {
+                                      fetchData(index, controller);
+                                      return subscriptionDetailsWidget(
+                                          controller: controller,
+                                          index: index,
+                                          selectedController: selectedItem,
+                                          subPlanId: data['data'][index]
+                                              ['subscription_id'],
+                                          parking_name: data['data'][index]
+                                              ['parking_name'],
+                                          parkingtype: data['data'][index]
+                                              ['parking_type'],
+                                          autoRenue: data['data'][index]
+                                                      ['auto_renewal'] ==
+                                                  1
+                                              ? 'Yes'
+                                              : 'No',
+                                          createdDate: data['data'][index]
+                                                  ['strt_date']
+                                              .toString()
+                                              .split(' ')
+                                              .first,
+                                          accessControllerList: data1,
+                                          id: data['data'][index]['id'],
+                                          slot_quantity: data['data'][index]
+                                              ['slot_quantity'],
+                                          subscriptionAmount: data['data']
+                                              [index]['subscription_amount'],
+                                          placeId: data['data'][index]
+                                              ['place_id'],
+                                          parking_number: data['data'][index]
+                                              ['strt_date'],
+                                          endDate: data['data'][index]
+                                                  ['end_date']
+                                              .toString()
+                                              .split(' ')
+                                              .first);
+                                    }
+                                    return SizedBox();
+                                  },
+                                );
                               })
                           : CircularProgressIndicator(),
                     ],
@@ -320,6 +246,7 @@ class _SubscriptionDetailsScreenState extends State<SubscriptionDetailsScreen> {
 
   Widget subscriptionDetailsWidget(
       {createdDate,
+      AccessController controller,
       index,
       subPlanId,
       endDate,
@@ -372,7 +299,7 @@ class _SubscriptionDetailsScreenState extends State<SubscriptionDetailsScreen> {
                     // setState(() {
                     isAutoRenewal.value = x;
                     // });
-                    fetchData(index);
+                    fetchData(index, controller);
 
                     showEditDialog(
                         id: id, renue: autoRenue, subPlanId: subPlanId);
@@ -559,13 +486,13 @@ class _SubscriptionDetailsScreenState extends State<SubscriptionDetailsScreen> {
                         child: Column(
                           children: [
                             DropdownButton(
-                              value: accessControllerList[index],
+                              value: selectedItem[index],
                               isExpanded: false,
                               isDense: true,
                               underline: const SizedBox(),
                               onChanged: (value) {
                                 setState(() {
-                                  accessControllerList[index] = value;
+                                  selectedItem[index] = value;
                                 });
                               },
                               items: accessControllerList.map<DropdownMenuItem>(
@@ -613,10 +540,6 @@ class _SubscriptionDetailsScreenState extends State<SubscriptionDetailsScreen> {
                 padding:
                     const EdgeInsets.symmetric(horizontal: 25, vertical: 25),
                 children: <Widget>[
-                  // parkingType(),
-                  // customHeight(30),
-                  // changeContractPeriod(),
-                  // customHeight(30),
                   changeAutoRenewal(renue),
                   customHeight(30),
                   const Text(
@@ -1353,10 +1276,10 @@ class _SubscriptionDetailsScreenState extends State<SubscriptionDetailsScreen> {
     );
   }
 
-  fetchData(index) {
+  fetchData(index, AccessController controller) {
     try {
       log('ALL DATA :- ${data}');
-      log('ALL DATA accessx :- ${accessx}');
+      log('ALL DATA accessx :- ${controller.responses}');
 
       accessData.clear();
 
@@ -1374,18 +1297,20 @@ class _SubscriptionDetailsScreenState extends State<SubscriptionDetailsScreen> {
       data1.clear();
       // accessData.forEach(
       //   (element) {
-      for (int i = 0; i < (accessx['data'] as List).length; i++) {
-        if (accessData.contains('${accessx['data'][i]['controls_id']}')) {
-          data1.add(accessx['data'][i]['control_name']);
+      for (int i = 0; i < (controller.responses['data'] as List).length; i++) {
+        if (accessData
+            .contains('${controller.responses['data'][i]['controls_id']}')) {
+          data1.add(controller.responses['data'][i]['control_name']);
         }
       }
-      // },
+      //   },
       // );
-      log('DTA ! :- $data1');
       if ((data['data'] as List).length != selectedItem.length) {
         print('ohh no bar bar andar');
-        selectedItem.add(data1[index]);
+        selectedItem.insert(index, data1[index]);
       }
+      log('DTA ! :- $data1');
+
       log('----selectedItem----- $selectedItem');
     } catch (e) {
       isLoading = false;
