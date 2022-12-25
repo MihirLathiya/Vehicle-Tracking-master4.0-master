@@ -1009,13 +1009,13 @@ class _SubscriptionDetailsScreenState extends State<SubscriptionDetailsScreen> {
     }
   }
 
-  getAccessControlle() async {
-    log('GET PLACE ID:- ${widget.placeId}');
-    await accessController.accessControllerViewModel(
-        id: widget.placeId == null
-            ? PreferenceManager.getPlaceId()
-            : widget.placeId);
-  }
+  // getAccessControlle() async {
+  //   log('GET PLACE ID:- ${widget.placeId}');
+  //   await accessController.accessControllerViewModel(
+  //       id: widget.placeId == null
+  //           ? PreferenceManager.getPlaceId()
+  //           : widget.placeId);
+  // }
 
   @override
   void initState() {
@@ -2190,16 +2190,14 @@ class _SubscriptionDetailsScreenState extends State<SubscriptionDetailsScreen> {
       }
       log('ACCESS DATA :- $accessData');
       data1.clear();
-      // accessData.forEach(
-      //   (element) {
+
       for (int i = 0; i < (controller.responses['data'] as List).length; i++) {
         if (accessData
             .contains('${controller.responses['data'][i]['controls_id']}')) {
           data1.add(controller.responses['data'][i]['control_name']);
         }
       }
-      //   },
-      // );
+
       if ((data['data'] as List).length != selectedItem.length) {
         print('ohh no bar bar andar');
         selectedItem.insert(index, data1[index]);
