@@ -116,8 +116,6 @@ class _SubscriptionDetailsScreenState extends State<SubscriptionDetailsScreen> {
   }
 
   dynamic accessx = {
-    "status": true,
-    "message": "access controls list",
     "data": [
       {
         "id": 1,
@@ -178,6 +176,18 @@ class _SubscriptionDetailsScreenState extends State<SubscriptionDetailsScreen> {
         "refund_amount": 29,
         "control_name": "Remote Control",
         "prize": 30
+      },
+      {
+        "id": 6,
+        "plase_id": 7,
+        "controls_id": 6,
+        "controls_prize": "40",
+        "created_at": "2022-12-17 15:31:13",
+        "updated_at": "2022-12-17 15:32:42",
+        "deposit_amount": 30,
+        "refund_amount": 29,
+        "control_name": "Others",
+        "prize": 50
       }
     ]
   };
@@ -202,7 +212,11 @@ class _SubscriptionDetailsScreenState extends State<SubscriptionDetailsScreen> {
     // accessx = widget.accessx;
     // getAccessData();
     getSubDetails(widget.id);
-    // getAccessControlle();
+    accessController.accessControllerViewModel(
+        id: widget.placeId == null
+            ? PreferenceManager.getPlaceId()
+            : widget.placeId);
+
     // subscriptionDetailsViewModel.subscriptionDetailsViewModel();
     super.initState();
   }
@@ -245,6 +259,7 @@ class _SubscriptionDetailsScreenState extends State<SubscriptionDetailsScreen> {
                                 fetchData(index);
                                 return subscriptionDetailsWidget(
                                     index: index,
+                                    selectedController: selectedItem,
                                     subPlanId: data['data'][index]
                                         ['subscription_id'],
                                     parking_name: data['data'][index]
@@ -312,6 +327,7 @@ class _SubscriptionDetailsScreenState extends State<SubscriptionDetailsScreen> {
       id,
       placeId,
       List accessControllerList,
+      List selectedController,
       slot_quantity,
       autoRenue,
       parkingtype,
@@ -543,13 +559,13 @@ class _SubscriptionDetailsScreenState extends State<SubscriptionDetailsScreen> {
                         child: Column(
                           children: [
                             DropdownButton(
-                              value: selectedItem[index],
+                              value: accessControllerList[index],
                               isExpanded: false,
                               isDense: true,
                               underline: const SizedBox(),
                               onChanged: (value) {
                                 setState(() {
-                                  selectedItem[index] = value;
+                                  accessControllerList[index] = value;
                                 });
                               },
                               items: accessControllerList.map<DropdownMenuItem>(
@@ -1344,27 +1360,33 @@ class _SubscriptionDetailsScreenState extends State<SubscriptionDetailsScreen> {
 
       accessData.clear();
 
-      accessData = [];
-
-      data['data'][index]['access_control'].forEach((element) {
-        accessData.add(element.toString().trim().toString());
-      });
-
+      for (int i = 0; i < (data['data'] as List).length; i++) {
+        data['data'][i]['access_control']
+            .toString()
+            .replaceFirst('[', '')
+            .replaceAll(']', '')
+            .split(',')
+            .forEach((element) {
+          accessData.add(element.toString().trim().toString());
+        });
+      }
       log('ACCESS DATA :- $accessData');
       data1.clear();
-      data1 = [];
-
+      // accessData.forEach(
+      //   (element) {
       for (int i = 0; i < (accessx['data'] as List).length; i++) {
         if (accessData.contains('${accessx['data'][i]['controls_id']}')) {
-          data1.insert(i, accessx['data'][i]['control_name']);
+          data1.add(accessx['data'][i]['control_name']);
         }
       }
-
+      // },
+      // );
       log('DTA ! :- $data1');
       if ((data['data'] as List).length != selectedItem.length) {
         print('ohh no bar bar andar');
         selectedItem.add(data1[index]);
       }
+      log('----selectedItem----- $selectedItem');
     } catch (e) {
       isLoading = false;
     }
