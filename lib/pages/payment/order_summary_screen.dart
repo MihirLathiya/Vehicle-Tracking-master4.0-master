@@ -465,7 +465,7 @@ class _OrderSummaryScreenState extends State<OrderSummaryScreen> {
           ),
           const Spacer(),
           Text(
-            '${widget.planPrice}/-',
+            widget.planPrice == null ? '' : '${widget.planPrice}/-',
             style: AppTextStyle.bold16.copyWith(color: whiteColor),
           ),
         ],

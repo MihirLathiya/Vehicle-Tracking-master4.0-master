@@ -20,7 +20,8 @@ import 'package:vehicletracking/widgets/app_button.dart';
 import 'package:vehicletracking/widgets/app_text_form_field.dart';
 
 class GotoYourSubscriptionScreen extends StatefulWidget {
-  const GotoYourSubscriptionScreen({Key key}) : super(key: key);
+  final placeId;
+  const GotoYourSubscriptionScreen({Key key, this.placeId}) : super(key: key);
 
   @override
   State<GotoYourSubscriptionScreen> createState() =>
@@ -62,7 +63,8 @@ class _GotoYourSubscriptionScreenState
     });
     var headers = {'Authorization': 'Bearer ${PreferenceManager.getBariear()}'};
     var request = await http.get(
-        Uri.parse('https://i.invoiceapi.ml/api/customer/subscriptionDetails'),
+        Uri.parse(
+            'https://i.invoiceapi.ml/api/customer/subscriptionDetails?place_id=${widget.placeId}'),
         headers: headers);
 
     if (request.statusCode == 200) {

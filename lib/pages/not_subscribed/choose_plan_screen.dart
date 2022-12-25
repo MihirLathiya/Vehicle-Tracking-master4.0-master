@@ -959,14 +959,14 @@ class _ChoosePlanScreenState extends State<ChoosePlanScreen> {
         ),
         Expanded(
           child: Text(
-            '${accessData['data'][index]['prize']}/-',
+            '${accessData['data'][index]['deposit_amount']}/-',
             textAlign: TextAlign.center,
             style: AppTextStyle.normalSemiBold14,
           ),
         ),
         Expanded(
           child: Text(
-            '${accessData['data'][index]['controls_prize']}/-',
+            '${accessData['data'][index]['refund_amount']}/-',
             textAlign: TextAlign.center,
             style: AppTextStyle.normalSemiBold14,
           ),

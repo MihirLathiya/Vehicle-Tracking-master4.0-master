@@ -497,11 +497,12 @@ class _SlotDetailsScreenState extends State<SlotDetailsScreen> {
               setState(() {});
               // widget.isSubscribed == true
               //     ?
-              // if (PreferenceManager.getPlaceId() != null) {
-              Get.to(() => const GotoYourSubscriptionScreen());
-              // } else {
-              //   CommonSnackBar.commonSnackBar(message: 'Select place first');
-              // }
+              if (PreferenceManager.getPlaceId() != null) {
+                Get.to(() => GotoYourSubscriptionScreen(
+                    placeId: PreferenceManager.getPlaceId()));
+              } else {
+                CommonSnackBar.commonSnackBar(message: 'Select place first');
+              }
 
               // : Get.to(() => const SubScriptionScreen());
             },

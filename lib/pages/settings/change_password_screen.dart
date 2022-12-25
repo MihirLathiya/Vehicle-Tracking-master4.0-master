@@ -24,6 +24,8 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
   TextEditingController newPasswordController = TextEditingController();
   TextEditingController confirmPasswordController = TextEditingController();
   final _formKey1 = GlobalKey<FormState>();
+  bool cPass = true;
+  bool c1Pass = true;
   CreatePasswordViewModel createPasswordViewModel =
       Get.put(CreatePasswordViewModel());
   @override
@@ -85,6 +87,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                           height25,
                           TextField(
                             controller: newPasswordController,
+                            obscureText: cPass,
                             decoration: InputDecoration(
                               labelText: 'Create New Password',
                               enabledBorder: OutlineInputBorder(
@@ -95,10 +98,16 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                                 borderSide: const BorderSide(color: appColor),
                                 borderRadius: BorderRadius.circular(10),
                               ),
-                              suffixIcon: const Padding(
-                                padding: EdgeInsets.all(10.0),
-                                child: Icon(
-                                  Icons.visibility_off,
+                              suffixIcon: IconButton(
+                                onPressed: () {
+                                  setState(() {
+                                    cPass = !cPass;
+                                  });
+                                },
+                                icon: Icon(
+                                  cPass
+                                      ? Icons.visibility
+                                      : Icons.visibility_off,
                                   color: blackColor,
                                 ),
                               ),
@@ -107,6 +116,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                           height25,
                           TextField(
                             controller: confirmPasswordController,
+                            obscureText: c1Pass,
                             decoration: InputDecoration(
                               labelText: 'Confirm New Password',
                               enabledBorder: OutlineInputBorder(
@@ -117,11 +127,17 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                                 borderSide: const BorderSide(color: appColor),
                                 borderRadius: BorderRadius.circular(10),
                               ),
-                              suffixIcon: const Padding(
-                                padding: EdgeInsets.all(10.0),
-                                child: Icon(
-                                  Icons.visibility_outlined,
-                                  color: greyColor,
+                              suffixIcon: IconButton(
+                                onPressed: () {
+                                  setState(() {
+                                    c1Pass = !c1Pass;
+                                  });
+                                },
+                                icon: Icon(
+                                  c1Pass
+                                      ? Icons.visibility
+                                      : Icons.visibility_off,
+                                  color: blackColor,
                                 ),
                               ),
                             ),
