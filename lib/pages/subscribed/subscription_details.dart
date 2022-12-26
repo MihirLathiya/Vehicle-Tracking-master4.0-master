@@ -998,6 +998,9 @@ class _SubscriptionDetailsScreenState extends State<SubscriptionDetailsScreen> {
       data = jsonDecode(request.body);
 
       log('SUBSCRIBE SLOT DATA :- $data');
+      for (int i = 0; i < (data['data'] as List).length; i++) {
+        selectedItem.insert(i, data['data'][i]['access_control'][0]);
+      }
       setState(() {
         isLoading = true;
       });
@@ -1009,14 +1012,6 @@ class _SubscriptionDetailsScreenState extends State<SubscriptionDetailsScreen> {
     }
   }
 
-  // getAccessControlle() async {
-  //   log('GET PLACE ID:- ${widget.placeId}');
-  //   await accessController.accessControllerViewModel(
-  //       id: widget.placeId == null
-  //           ? PreferenceManager.getPlaceId()
-  //           : widget.placeId);
-  // }
-
   @override
   void initState() {
     getSubDetails(widget.id);
@@ -1025,7 +1020,6 @@ class _SubscriptionDetailsScreenState extends State<SubscriptionDetailsScreen> {
             ? PreferenceManager.getPlaceId()
             : widget.placeId);
 
-    // subscriptionDetailsViewModel.subscriptionDetailsViewModel();
     super.initState();
   }
 
@@ -1074,7 +1068,7 @@ class _SubscriptionDetailsScreenState extends State<SubscriptionDetailsScreen> {
                                     }
                                     if (controller.accessApiResponse.status ==
                                         Status.COMPLETE) {
-                                      fetchData(index, controller);
+                                      // fetchData(index, controller);
                                       return subscriptionDetailsWidget(
                                           controller: controller,
                                           index: index,
@@ -1095,7 +1089,8 @@ class _SubscriptionDetailsScreenState extends State<SubscriptionDetailsScreen> {
                                               .toString()
                                               .split(' ')
                                               .first,
-                                          accessControllerList: data1,
+                                          accessControllerList: data['data']
+                                              [index]['access_control'],
                                           id: data['data'][index]['id'],
                                           slot_quantity: data['data'][index]
                                               ['slot_quantity'],
@@ -1105,8 +1100,7 @@ class _SubscriptionDetailsScreenState extends State<SubscriptionDetailsScreen> {
                                               ['place_id'],
                                           parking_number: data['data'][index]
                                               ['strt_date'],
-                                          endDate: data['data'][index]
-                                                  ['end_date']
+                                          endDate: data['data'][index]['end_date']
                                               .toString()
                                               .split(' ')
                                               .first);
@@ -1152,6 +1146,7 @@ class _SubscriptionDetailsScreenState extends State<SubscriptionDetailsScreen> {
       endDate,
       parking_number,
       id,
+      selectedItem,
       placeId,
       List accessControllerList,
       List selectedController,
@@ -1199,10 +1194,13 @@ class _SubscriptionDetailsScreenState extends State<SubscriptionDetailsScreen> {
                     // setState(() {
                     isAutoRenewal.value = x;
                     // });
-                    fetchData(index, controller);
+                    // fetchData(index, controller);
 
                     showEditDialog(
-                        id: id, renue: autoRenue, subPlanId: subPlanId);
+                        accessControllerList: accessControllerList,
+                        id: id,
+                        renue: autoRenue,
+                        subPlanId: subPlanId);
                   },
                   child: Row(
                     children: [
@@ -1386,13 +1384,13 @@ class _SubscriptionDetailsScreenState extends State<SubscriptionDetailsScreen> {
                         child: Column(
                           children: [
                             DropdownButton(
-                              value: selectedItem[index],
+                              value: selectedController[index],
                               isExpanded: false,
                               isDense: true,
                               underline: const SizedBox(),
                               onChanged: (value) {
                                 setState(() {
-                                  selectedItem[index] = value;
+                                  selectedController[index] = value;
                                 });
                               },
                               items: accessControllerList.map<DropdownMenuItem>(
@@ -1423,7 +1421,7 @@ class _SubscriptionDetailsScreenState extends State<SubscriptionDetailsScreen> {
     );
   }
 
-  void showEditDialog({id, renue, subPlanId}) {
+  void showEditDialog({accessControllerList, id, renue, subPlanId}) {
     showDialog(
       context: context,
       builder: (context) {
@@ -1449,7 +1447,7 @@ class _SubscriptionDetailsScreenState extends State<SubscriptionDetailsScreen> {
                   const Divider(
                     color: borderGreyColor,
                   ),
-                  changeAccessControl(),
+                  changeAccessControl(accessControllerList),
                   customHeight(30),
                   feedBack(setStateDialog),
                   customHeight(30),
@@ -1737,7 +1735,7 @@ class _SubscriptionDetailsScreenState extends State<SubscriptionDetailsScreen> {
     );
   }
 
-  Widget changeAccessControl() {
+  Widget changeAccessControl(accessControllerList) {
     return GetBuilder<AccessController>(
       builder: (controller) {
         if (controller.accessApiResponse.status == Status.LOADING) {
@@ -1753,8 +1751,8 @@ class _SubscriptionDetailsScreenState extends State<SubscriptionDetailsScreen> {
           for (int i = 0; i < (accessData1['data'] as List).length; i++) {
             print('SELECT ::: |${accessData1['data'][i]['control_name']}|');
 
-            if (accessData
-                .contains('${accessData1['data'][i]['controls_id']}')) {
+            if (accessControllerList
+                .contains('${accessData1['data'][i]['control_name']}')) {
               print('contain----${accessData1['data'][i]['control_name']}');
             } else {
               changeAccessControlList
@@ -2176,37 +2174,37 @@ class _SubscriptionDetailsScreenState extends State<SubscriptionDetailsScreen> {
     );
   }
 
-  fetchData(index, AccessController controller) {
-    try {
-      log('ALL DATA :- ${data}');
-      log('ALL DATA accessx :- ${controller.responses}');
-
-      accessData.clear();
-
-      for (int i = 0; i < (data['data'] as List).length; i++) {
-        data['data'][i]['access_control'].forEach((element) {
-          accessData.add(element.toString().trim().toString());
-        });
-      }
-      log('ACCESS DATA :- $accessData');
-      data1.clear();
-
-      for (int i = 0; i < (controller.responses['data'] as List).length; i++) {
-        if (accessData
-            .contains('${controller.responses['data'][i]['controls_id']}')) {
-          data1.add(controller.responses['data'][i]['control_name']);
-        }
-      }
-
-      if ((data['data'] as List).length != selectedItem.length) {
-        print('ohh no bar bar andar');
-        selectedItem.insert(index, data1[index]);
-      }
-      log('DTA ! :- $data1');
-
-      log('----selectedItem----- $selectedItem');
-    } catch (e) {
-      isLoading = false;
-    }
-  }
+  // fetchData(index, AccessController controller) {
+  //   try {
+  //     log('ALL DATA :- ${data}');
+  //     log('ALL DATA accessx :- ${controller.responses}');
+  //
+  //     accessData.clear();
+  //
+  //     for (int i = 0; i < (data['data'] as List).length; i++) {
+  //       data['data'][i]['access_control'].forEach((element) {
+  //         accessData.add(element.toString().trim().toString());
+  //       });
+  //     }
+  //     log('ACCESS DATA :- $accessData');
+  //     data1.clear();
+  //
+  //     for (int i = 0; i < (controller.responses['data'] as List).length; i++) {
+  //       if (accessData
+  //           .contains('${controller.responses['data'][i]['controls_id']}')) {
+  //         data1.add(controller.responses['data'][i]['control_name']);
+  //       }
+  //     }
+  //
+  //     if ((data['data'] as List).length != selectedItem.length) {
+  //       print('ohh no bar bar andar');
+  //       selectedItem.insert(index, data1[index]);
+  //     }
+  //     log('DTA ! :- $data1');
+  //
+  //     log('----selectedItem----- $selectedItem');
+  //   } catch (e) {
+  //     isLoading = false;
+  //   }
+  // }
 }
