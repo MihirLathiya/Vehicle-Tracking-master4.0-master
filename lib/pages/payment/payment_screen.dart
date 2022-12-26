@@ -508,8 +508,10 @@ class _PaymentScreenState extends State<PaymentScreen> {
     for (int i = 0; i < selected.length; i++) {
       selected1.addAll({'sloat_list[$i]': '${selected[i]}'});
     }
-    for (int i = 0; i < controllers.length; i++) {
-      controllers1.addAll({'access_controls[$i]': '${controllers[i]}'});
+    if (controllers.isNotEmpty) {
+      for (int i = 0; i < controllers.length; i++) {
+        controllers1.addAll({'access_controls[$i]': '${controllers[i]}'});
+      }
     }
     Map<String, dynamic> bodyy22 = {
       'place_id': '${widget.placeId}',
@@ -520,9 +522,13 @@ class _PaymentScreenState extends State<PaymentScreen> {
       'paln_duration': '${widget.duration}',
       'vehicle_number': '${widget.vehicleNumber.toString()}'
     };
+    if (controllers.isNotEmpty) {
+      bodyy22.addAll(controllers1);
+    } else {
+      log('NOT ADDED DATA');
+    }
 
     bodyy22.addAll(selected1);
-    bodyy22.addAll(controllers1);
     log('BODY OF ADD DATAS  :- $bodyy22');
     var request = await http.post(
         Uri.parse('https://i.invoiceapi.ml/api/customer/createSubscription'),

@@ -999,7 +999,9 @@ class _SubscriptionDetailsScreenState extends State<SubscriptionDetailsScreen> {
 
       log('SUBSCRIBE SLOT DATA :- $data');
       for (int i = 0; i < (data['data'] as List).length; i++) {
-        selectedItem.insert(i, data['data'][i]['access_control'][0]);
+        if ((data['data'][i]['access_control'] as List).isNotEmpty) {
+          selectedItem.insert(i, data['data'][i]['access_control'][0]);
+        }
       }
       setState(() {
         isLoading = true;
@@ -1383,28 +1385,30 @@ class _SubscriptionDetailsScreenState extends State<SubscriptionDetailsScreen> {
                         alignment: Alignment.centerRight,
                         child: Column(
                           children: [
-                            DropdownButton(
-                              value: selectedController[index],
-                              isExpanded: false,
-                              isDense: true,
-                              underline: const SizedBox(),
-                              onChanged: (value) {
-                                setState(() {
-                                  selectedController[index] = value;
-                                });
-                              },
-                              items: accessControllerList.map<DropdownMenuItem>(
-                                (value) {
-                                  print('value----${value}');
-                                  return DropdownMenuItem(
-                                    value: value,
-                                    child: Text(
-                                      value,
-                                    ),
-                                  );
+                            if (accessControllerList.isNotEmpty)
+                              DropdownButton(
+                                value: selectedController[index],
+                                isExpanded: false,
+                                isDense: true,
+                                underline: const SizedBox(),
+                                onChanged: (value) {
+                                  setState(() {
+                                    selectedController[index] = value;
+                                  });
                                 },
-                              ).toList(),
-                            ),
+                                items:
+                                    accessControllerList.map<DropdownMenuItem>(
+                                  (value) {
+                                    print('value----${value}');
+                                    return DropdownMenuItem(
+                                      value: value,
+                                      child: Text(
+                                        value,
+                                      ),
+                                    );
+                                  },
+                                ).toList(),
+                              ),
                             const Divider(),
                           ],
                         ),
