@@ -10,7 +10,6 @@ import 'package:vehicletracking/utils/app_assets.dart';
 import 'package:vehicletracking/utils/app_colors.dart';
 import 'package:vehicletracking/utils/app_static_decoration.dart';
 import 'package:vehicletracking/utils/app_text_style.dart';
-import 'package:vehicletracking/utils/validators.dart';
 import 'package:vehicletracking/view_model/access_controller_view_model.dart';
 import 'package:vehicletracking/view_model/plan_details_get_repo.dart';
 import 'package:vehicletracking/widgets/app_button.dart';
@@ -642,40 +641,39 @@ class _ChoosePlanScreenState extends State<ChoosePlanScreen> {
                                 log('price ${subController.planDetails['price']}');
                                 log('access Controller ${accesControll}');
                                 log('SLOT LIST ${widget.slotList}');
-                                if (accesControll.isNotEmpty) {
-                                  for (int i = 0;
-                                      i < accesControllPrice.length;
-                                      i++) {
-                                    x += int.parse(accesControllPrice[i]);
-                                  }
-                                  log('TOTAL PRICE :- $x');
-                                  log('TOTAL PRICE :- $accesControllId');
-                                  Get.to(() => OrderSummaryScreen(
-                                        slotList: widget.slotList,
-                                        subId: widget.subId,
-                                        totalCount: int.parse(subController
-                                                .planDetails['price']) +
-                                            x,
-                                        planPrice:
-                                            subController.planDetails['price'],
-                                        totalAccessPrice: x,
-                                        accessPrice: accesControllPrice,
-                                        placeId: widget.placeId,
-                                        access: accesControll,
-                                        accessController: accesControllId,
-                                        slotQuntity: widget.slotQuntity,
-                                        slotType: widget.slotType,
-                                        vehicleNumber: widget.vehicleNumber,
-                                        vehicleType: widget.vehicleType,
-                                        location: widget.location,
-                                        duration: widget.duration,
-                                        price:
-                                            subController.planDetails['price'],
-                                      ));
-                                } else {
-                                  CommonSnackBar.commonSnackBar(
-                                      message: 'Select access Controls');
+                                // if (accesControll.isNotEmpty) {
+                                for (int i = 0;
+                                    i < accesControllPrice.length;
+                                    i++) {
+                                  x += int.parse(accesControllPrice[i]);
                                 }
+                                log('TOTAL PRICE :- $x');
+                                log('TOTAL PRICE :- $accesControllId');
+                                Get.to(() => OrderSummaryScreen(
+                                      slotList: widget.slotList,
+                                      subId: widget.subId,
+                                      totalCount: int.parse(subController
+                                              .planDetails['price']) +
+                                          x,
+                                      planPrice:
+                                          subController.planDetails['price'],
+                                      totalAccessPrice: x,
+                                      accessPrice: accesControllPrice,
+                                      placeId: widget.placeId,
+                                      access: accesControll,
+                                      accessController: accesControllId,
+                                      slotQuntity: widget.slotQuntity,
+                                      slotType: widget.slotType,
+                                      vehicleNumber: widget.vehicleNumber,
+                                      vehicleType: widget.vehicleType,
+                                      location: widget.location,
+                                      duration: widget.duration,
+                                      price: subController.planDetails['price'],
+                                    ));
+                                // } else {
+                                //   CommonSnackBar.commonSnackBar(
+                                //       message: 'Select access Controls');
+                                // }
                               },
                               title: "Check Out",
                             ),

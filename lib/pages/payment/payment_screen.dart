@@ -473,8 +473,10 @@ class _PaymentScreenState extends State<PaymentScreen> {
         selected1.addAll({'sloat_list[$i]': '${selected[i]}'});
       }
 
-      for (int i = 0; i < controllers.length; i++) {
-        controllers1.addAll({'access_controls[$i]': '${controllers[i]}'});
+      if (controllers.isNotEmpty) {
+        for (int i = 0; i < controllers.length; i++) {
+          controllers1.addAll({'access_controls[$i]': '${controllers[i]}'});
+        }
       }
       Map<String, dynamic> bodyy11 = {
         'subscription_id': '${widget.subId}',
@@ -482,8 +484,13 @@ class _PaymentScreenState extends State<PaymentScreen> {
         'slot_quantity': '${widget.slotQuntity}',
         'vehicle_number': '${widget.vehicleNumber}'
       };
+      if (controllers.isNotEmpty) {
+        bodyy11.addAll(controllers1);
+      } else {
+        log('NOT ADDED DATA ADD SLOT');
+      }
       bodyy11.addAll(selected1);
-      bodyy11.addAll(controllers1);
+
       log('ADD SLOT BODY  :- $bodyy11');
       var request = await http.post(
           Uri.parse('https://i.invoiceapi.ml/api/customer/addSlot'),
