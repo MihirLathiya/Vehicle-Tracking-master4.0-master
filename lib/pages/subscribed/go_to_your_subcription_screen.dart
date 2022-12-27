@@ -388,7 +388,8 @@ class _GotoYourSubscriptionScreenState
       children: [
         GestureDetector(
           onTap: () async {
-            if (data['data'][index]['parking_type'] == 'Open') {
+            if (data['data'][index]['parking_type'] == 'Open' ||
+                data['data'][index]['parking_type'] == 'open') {
               var headers = {
                 'Authorization': 'Bearer ${PreferenceManager.getBariear()}'
               };
