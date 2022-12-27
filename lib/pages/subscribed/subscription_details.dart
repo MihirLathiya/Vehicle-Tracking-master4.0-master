@@ -1380,7 +1380,7 @@ class _SubscriptionDetailsScreenState extends State<SubscriptionDetailsScreen> {
                       ),
                     ),
                     SizedBox(
-                      width: Get.width / 3,
+                      width: Get.width / 2.8,
                       child: Align(
                         alignment: Alignment.centerRight,
                         child: Column(
