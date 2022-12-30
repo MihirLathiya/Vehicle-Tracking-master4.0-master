@@ -392,7 +392,7 @@ class _GotoYourSubscriptionScreenState
           onTap: () async {
             if (data['data'][index]['parking_type'] == 'Open' ||
                 data['data'][index]['parking_type'] == 'open') {
-              await getSubDetails1(data['data'][index]['id']);
+              getSubDetails1(data['data'][index]['id']);
               removeOpenSlot(data['data'][index]['id']);
               setState(() {});
             } else {
@@ -1022,11 +1022,14 @@ class _GotoYourSubscriptionScreenState
 
                                     if (response.statusCode == 200) {
                                       print(await response.body);
+                                      Get.back();
+
                                       CommonSnackBar.commonSnackBar(
                                           message: 'slot remove Request send');
                                     } else {
-                                      Get.back();
                                       error = jsonDecode(await response.body);
+                                      Get.back();
+
                                       CommonSnackBar.commonSnackBar(
                                           message: error['message'].toString());
                                       print('ERROR ${response.reasonPhrase}');
