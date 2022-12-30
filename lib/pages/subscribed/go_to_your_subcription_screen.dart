@@ -84,6 +84,8 @@ class _GotoYourSubscriptionScreenState
 
   dynamic slotNames;
   dynamic slotNamesValue;
+  dynamic openSlotNames;
+  dynamic openSlotNamesValue;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -390,39 +392,13 @@ class _GotoYourSubscriptionScreenState
           onTap: () async {
             if (data['data'][index]['parking_type'] == 'Open' ||
                 data['data'][index]['parking_type'] == 'open') {
-              var headers = {
-                'Authorization': 'Bearer ${PreferenceManager.getBariear()}'
-              };
-              var request = http.MultipartRequest('POST',
-                  Uri.parse('https://i.invoiceapi.ml/api/customer/removeSlot'));
-              request.fields.addAll({'slot_id': slotId.toString()});
-
-              request.headers.addAll(headers);
-
-              http.StreamedResponse response = await request.send();
-
-              if (response.statusCode == 200) {
-                print(await response.stream.bytesToString());
-                CommonSnackBar.commonSnackBar(
-                    message: 'slot remove Request send');
-              } else {
-                print(response.reasonPhrase);
-              }
+              await getSubDetails1(data['data'][index]['id']);
+              removeOpenSlot(data['data'][index]['id']);
+              setState(() {});
             } else {
               getSubDetails1(data['data'][index]['id']);
-              renewalPopup1(slotId.toString());
+              removeReservedSlot(slotId.toString());
               setState(() {});
-
-              // Get.to(
-              //   () => ParkingSlotScreen(
-              //     duration: PreferenceManager.getDuration(),
-              //     location: PreferenceManager.getName1(),
-              //     placeId: data['data'][index]['parking_type'],
-              //     slotQuntity: data['data'][index]['parking_type'],
-              //     slotType: 'reserved',
-              //     vehicleType: 'Two wheel',
-              //   ),
-              // );
             }
           },
           child: Container(
@@ -841,7 +817,245 @@ class _GotoYourSubscriptionScreenState
     );
   }
 
-  void renewalPopup1(slotId) {
+  void removeOpenSlot(slotId) {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return StatefulBuilder(
+          builder: (context, state) {
+            Future.delayed(Duration.zero, () {
+              state(() {});
+            });
+            return Loading == true
+                ? Dialog(
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    elevation: 16,
+                    insetPadding: const EdgeInsets.symmetric(
+                        horizontal: 20, vertical: 60),
+                    child: ListView(
+                      shrinkWrap: true,
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 25, vertical: 25),
+                      children: <Widget>[
+                        DropdownButtonHideUnderline(
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 10),
+                            child: DropdownButtonFormField(
+                              decoration: InputDecoration(
+                                label: Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 10),
+                                  child: Text(
+                                    'Slot*',
+                                    style: AppTextStyle.normalRegular14
+                                        .copyWith(
+                                            color: greyColor, fontSize: 16),
+                                  ),
+                                ),
+                                suffixIcon: const Padding(
+                                  padding: EdgeInsets.all(10.0),
+                                  child: Icon(
+                                    Icons.keyboard_arrow_down_outlined,
+                                    color: blackColor,
+                                  ),
+                                ),
+                                border: const OutlineInputBorder(
+                                  borderRadius: BorderRadius.all(
+                                    Radius.circular(15.0),
+                                  ),
+                                ),
+                              ),
+                              iconSize: 0.0,
+                              hint: slotNames == null
+                                  ? Padding(
+                                      padding: const EdgeInsets.symmetric(
+                                          horizontal: 10.0),
+                                      child: Text('Slot',
+                                          style: AppTextStyle.normalRegular14
+                                              .copyWith(color: greyColor)),
+                                    )
+                                  : Text(
+                                      openSlotNamesValue.toString(),
+                                      style: const TextStyle(color: blackColor),
+                                    ),
+                              isExpanded: true,
+                              borderRadius: BorderRadius.circular(30),
+                              style: const TextStyle(color: blackColor),
+                              items: slotName.map(
+                                (val) {
+                                  return DropdownMenuItem<String>(
+                                    value: val,
+                                    child: Padding(
+                                      padding: const EdgeInsets.symmetric(
+                                          horizontal: 10),
+                                      child: Text(
+                                          '${val.toString().split('..').last}'),
+                                    ),
+                                  );
+                                },
+                              ).toList(),
+                              onChanged: (val) {
+                                setState(
+                                  () {
+                                    openSlotNamesValue = val.toString();
+                                    openSlotNamesValue = val
+                                        .toString()
+                                        .split('..')
+                                        .last
+                                        .toString();
+                                  },
+                                );
+                                print(
+                                    'SlotNAMES VALUE :- ${openSlotNamesValue}');
+                                print('SlotNAMES ID :- ${slotId.toString()}');
+                              },
+                            ),
+                          ),
+                        ),
+                        height10,
+                        Row(
+                          children: [
+                            GestureDetector(
+                              onTap: () {
+                                isTermAgree.value = !isTermAgree.value;
+                              },
+                              child: Obx(
+                                () => isTermAgree.value
+                                    ? Container(
+                                        height: 20,
+                                        width: 20,
+                                        alignment: Alignment.center,
+                                        decoration: BoxDecoration(
+                                          color: appColor,
+                                          borderRadius:
+                                              BorderRadius.circular(5),
+                                          border: Border.all(color: appColor),
+                                        ),
+                                        child: const Icon(
+                                          Icons.check_rounded,
+                                          color: whiteColor,
+                                          size: 18,
+                                        ),
+                                      )
+                                    : Container(
+                                        height: 20,
+                                        width: 20,
+                                        decoration: BoxDecoration(
+                                          borderRadius:
+                                              BorderRadius.circular(5),
+                                          border: Border.all(color: appColor),
+                                        ),
+                                      ),
+                              ),
+                            ),
+                            const SizedBox(
+                              width: 10,
+                            ),
+                            Expanded(
+                              child: RichText(
+                                maxLines: 2,
+                                text: TextSpan(
+                                  children: [
+                                    TextSpan(
+                                      text: 'I Agree to the ',
+                                      style:
+                                          AppTextStyle.normalRegular16.copyWith(
+                                        color: greyColor,
+                                      ),
+                                    ),
+                                    TextSpan(
+                                      text: 'Terms & Conditions',
+                                      style:
+                                          AppTextStyle.normalRegular16.copyWith(
+                                        color: appColor,
+                                        decoration: TextDecoration.underline,
+                                      ),
+                                      recognizer: TapGestureRecognizer()
+                                        ..onTap = () {},
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                        height20,
+                        Row(
+                          children: [
+                            Expanded(
+                              child: AppBorderButton(
+                                title: 'Cancel',
+                                height: 45,
+                                radius: 10,
+                                onTap: () {
+                                  Get.back();
+                                },
+                              ),
+                            ),
+                            width15,
+                            Expanded(
+                              child: AppFillButton(
+                                title: 'Proceed',
+                                radius: 10,
+                                height: 45,
+                                onTap: () async {
+                                  var error;
+                                  if (isTermAgree.value == true) {
+                                    log('DATA :- ${{
+                                      'slot_id': openSlotNamesValue,
+                                      'subscription_id': slotId.toString()
+                                    }}');
+                                    var headers = {
+                                      'Authorization':
+                                          'Bearer ${PreferenceManager.getBariear()}'
+                                    };
+                                    var response = await http.post(
+                                        Uri.parse(
+                                            'https://i.invoiceapi.ml/api/customer/removeSlot'),
+                                        headers: headers,
+                                        body: {
+                                          'slot_id': openSlotNamesValue,
+                                          'subscription_id': slotId.toString()
+                                        });
+
+                                    if (response.statusCode == 200) {
+                                      print(await response.body);
+                                      CommonSnackBar.commonSnackBar(
+                                          message: 'slot remove Request send');
+                                    } else {
+                                      Get.back();
+                                      error = jsonDecode(await response.body);
+                                      CommonSnackBar.commonSnackBar(
+                                          message: error['message'].toString());
+                                      print('ERROR ${response.reasonPhrase}');
+                                      print(
+                                          'MESSAGE ${await error['message']}');
+                                    }
+                                  } else {
+                                    CommonSnackBar.commonSnackBar(
+                                        message: 'Accept Condition first');
+                                  }
+                                },
+                              ),
+                            ),
+                          ],
+                        ),
+                        height10,
+                      ],
+                    ),
+                  )
+                : Center(
+                    child: CircularProgressIndicator(),
+                  );
+          },
+        );
+      },
+    );
+  }
+
+  void removeReservedSlot(slotId) {
     showDialog(
       context: context,
       builder: (context) {
@@ -936,6 +1150,7 @@ class _GotoYourSubscriptionScreenState
                                   },
                                 );
                                 print('SlotNAMES VALUE :- ${slotNamesValue}');
+                                print('SlotNAMES ID :- ${slotId.toString()}');
                               },
                             ),
                           ),
@@ -1029,31 +1244,39 @@ class _GotoYourSubscriptionScreenState
                                 onTap: () async {
                                   log('HELLO  :- ${slotNames.toString().split('..').first}');
                                   log('HELLO1  :- ${slotNamesValue}');
+                                  var error;
                                   if (isTermAgree.value == true) {
+                                    log('DATA :- ${{
+                                      'slot_id': slotNamesValue,
+                                      'subscription_id': slotId.toString()
+                                    }}');
                                     var headers = {
                                       'Authorization':
                                           'Bearer ${PreferenceManager.getBariear()}'
                                     };
-                                    var request = http.MultipartRequest(
-                                        'POST',
+                                    var response = await http.post(
                                         Uri.parse(
-                                            'https://i.invoiceapi.ml/api/customer/removeSlot'));
-                                    request.fields
-                                        .addAll({'slot_id': slotNamesValue});
-                                    request.headers.addAll(headers);
-
-                                    http.StreamedResponse response =
-                                        await request.send();
+                                            'https://i.invoiceapi.ml/api/customer/removeSlot'),
+                                        headers: headers,
+                                        body: {
+                                          'slot_id': slotNamesValue,
+                                          'subscription_id': slotId.toString()
+                                        });
 
                                     if (response.statusCode == 200) {
                                       Get.back();
                                       remove.clear();
-                                      print(await response.stream
-                                          .bytesToString());
+                                      print(jsonDecode(await response.body));
                                       CommonSnackBar.commonSnackBar(
                                           message: 'slot remove Request send');
                                     } else {
-                                      print(response.reasonPhrase);
+                                      Get.back();
+                                      error = jsonDecode(await response.body);
+                                      CommonSnackBar.commonSnackBar(
+                                          message: error['message'].toString());
+                                      print('ERROR ${response.reasonPhrase}');
+                                      print(
+                                          'MESSAGE ${await error['message']}');
                                     }
                                   } else {
                                     CommonSnackBar.commonSnackBar(
@@ -1336,11 +1559,15 @@ class _GotoYourSubscriptionScreenState
       }
       slotNames = slotName[0].toString().split('..').first;
       slotNamesValue = slotName[0].toString().split('..').last;
+      openSlotNames = slotName[0].toString().split('..').first;
+      openSlotNamesValue = slotName[0].toString().split('..').last;
 
       setState(() {
         Loading = true;
       });
       log('HELLO $slotName');
+      log('HELLO1 $openSlotNames');
+      log('HELLO2 $openSlotNamesValue');
       setState(() {});
     } else {
       setState(() {

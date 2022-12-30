@@ -238,7 +238,7 @@ class CommonSnackBar {
   static commonSnackBar({String message}) {
     Get.showSnackbar(GetSnackBar(
       message: message,
-      duration: Duration(seconds: 1),
+      duration: Duration(seconds: 2),
     ));
   }
 }
